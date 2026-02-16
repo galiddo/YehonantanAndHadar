@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Save the Date — Hadar & Yehonatan</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
@@ -250,7 +250,8 @@
       return d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
     }
 
-    function downloadCalendar() {
+    function downloadCalendar(e) {
+      e.preventDefault();
       const start = formatICSDate(weddingDate);
       const end = formatICSDate(new Date(weddingDate.getTime() + 4 * 60 * 60 * 1000));
       const ics = [
@@ -271,17 +272,23 @@
 
       const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
       const url = URL.createObjectURL(blob);
-      const a = document.getElementById('add-to-calendar');
-      a.href = url;
-      a.download = 'wedding.ics';
-      a.click();
-      URL.revokeObjectURL(url);
+
+      var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
+      if (isMobile) {
+        var dataUrl = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics);
+        var opened = window.open(dataUrl, '_blank');
+        if (!opened) window.location.href = dataUrl;
+        URL.revokeObjectURL(url);
+      } else {
+        var a = document.getElementById('add-to-calendar');
+        a.href = url;
+        a.download = 'wedding.ics';
+        a.click();
+        setTimeout(function() { URL.revokeObjectURL(url); }, 500);
+      }
     }
 
-    document.getElementById('add-to-calendar').addEventListener('click', function(e) {
-      e.preventDefault();
-      downloadCalendar();
-    });
+    document.getElementById('add-to-calendar').addEventListener('click', downloadCalendar);
 
     updateCountdown();
     setInterval(updateCountdown, 1000);
