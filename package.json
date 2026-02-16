@@ -2,10 +2,6 @@
   "name": "yehonantan-and-hadar",
   "private": true,
   "scripts": {
-    "build": "echo 'Static site — no build step'",
-    "deploy": "wrangler pages deploy . --project-name=yehonantan-and-hadar"
-  },
-  "devDependencies": {
-    "wrangler": "^3"
+    "build": "echo 'Static site — no build step'"
   }
 }
