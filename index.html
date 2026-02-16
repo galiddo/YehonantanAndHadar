@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Countdown to Our Wedding</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Outfit:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #faf8f5;
+      --blush: #e8dcd5;
+      --sage: #9a9b7a;
+      --terracotta: #c4a484;
+      --ink: #2c2a26;
+      --gold: #b8860b;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      font-family: 'Outfit', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      position: relative;
+      overflow-x: hidden;
+      padding-left: max(1rem, env(safe-area-inset-left));
+      padding-right: max(1rem, env(safe-area-inset-right));
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: 
+        radial-gradient(ellipse 80% 50% at 50% 0%, rgba(196, 164, 132, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 40% at 80% 100%, rgba(154, 155, 122, 0.12) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 720px;
+    }
+
+    .subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(0.85rem, 2.5vw, 1rem);
+      font-weight: 400;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 0.5rem;
+    }
+
+    @media (min-width: 480px) {
+      .subtitle { letter-spacing: 0.35em; }
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.25rem, 6vw, 3.5rem);
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 2.5rem;
+      line-height: 1.2;
+    }
+
+    .countdown {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (min-width: 480px) {
+      .countdown { gap: 1.25rem; margin-bottom: 2rem; }
+    }
+
+    .countdown-unit {
+      background: #fff;
+      padding: 1rem 0.9rem;
+      min-width: 0;
+      flex: 1 1  calc(50% - 0.5rem);
+      max-width: 120px;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(44, 42, 38, 0.06);
+      border: 1px solid var(--blush);
+    }
+
+    @media (min-width: 480px) {
+      .countdown-unit {
+        padding: 1.5rem 1.75rem;
+        min-width: 100px;
+        flex: none;
+        max-width: none;
+      }
+    }
+
+    .countdown-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.75rem, 6vw, 2.5rem);
+      font-weight: 600;
+      color: var(--terracotta);
+      display: block;
+      line-height: 1.2;
+    }
+
+    .countdown-label {
+      font-size: 0.7rem;
+      font-weight: 300;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-top: 0.35rem;
+    }
+
+    .message {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.25rem;
+      font-style: italic;
+      color: var(--ink);
+      opacity: 0.85;
+    }
+
+    .divider {
+      width: 48px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--terracotta), transparent);
+      margin: 1.5rem auto;
+    }
+
+    @media (min-width: 480px) {
+      .divider { margin: 2rem auto; }
+    }
+
+    .add-to-calendar {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-height: 48px;
+      padding: 0.875rem 1.5rem;
+      margin-top: 0.5rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--blush);
+      border-radius: 999px;
+      box-shadow: 0 4px 20px rgba(44, 42, 38, 0.06);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .add-to-calendar:hover,
+    .add-to-calendar:focus {
+      background: var(--blush);
+      border-color: var(--terracotta);
+      box-shadow: 0 6px 24px rgba(44, 42, 38, 0.08);
+    }
+
+    .add-to-calendar:active {
+      transform: scale(0.98);
+    }
+
+    .add-to-calendar svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <p class="subtitle">We can't wait</p>
+    <h1>Countdown to Our Wedding</h1>
+    <div class="countdown">
+      <div class="countdown-unit">
+        <span class="countdown-value" id="days">—</span>
+        <span class="countdown-label">Days</span>
+      </div>
+      <div class="countdown-unit">
+        <span class="countdown-value" id="hours">—</span>
+        <span class="countdown-label">Hours</span>
+      </div>
+      <div class="countdown-unit">
+        <span class="countdown-value" id="minutes">—</span>
+        <span class="countdown-label">Minutes</span>
+      </div>
+      <div class="countdown-unit">
+        <span class="countdown-value" id="seconds">—</span>
+        <span class="countdown-label">Seconds</span>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <p class="message">Until we say &ldquo;I do&rdquo;</p>
+    <a href="#" id="add-to-calendar" class="add-to-calendar" download="wedding.ics">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+        <line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/>
+        <line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      Add to calendar
+    </a>
+  </div>
+
+  <script>
+    // Set your wedding date and time (edit this to your actual date)
+    // Default: 199 days and 14 hours from Feb 16, 2025 → Sept 3, 2025 at 2:00 PM
+    const weddingDate = new Date('2026-09-04T14:00:00');
+
+    const daysEl = document.getElementById('days');
+    const hoursEl = document.getElementById('hours');
+    const minutesEl = document.getElementById('minutes');
+    const secondsEl = document.getElementById('seconds');
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = weddingDate - now;
+
+      if (diff <= 0) {
+        daysEl.textContent = '0';
+        hoursEl.textContent = '0';
+        minutesEl.textContent = '0';
+        secondsEl.textContent = '0';
+        return;
+      }
+
+      const totalSeconds = Math.floor(diff / 1000);
+      const seconds = totalSeconds % 60;
+      const totalMinutes = Math.floor(totalSeconds / 60);
+      const minutes = totalMinutes % 60;
+      const totalHours = Math.floor(totalMinutes / 60);
+      const hours = totalHours % 24;
+      const days = Math.floor(totalHours / 24);
+
+      daysEl.textContent = days;
+      hoursEl.textContent = String(hours).padStart(2, '0');
+      minutesEl.textContent = String(minutes).padStart(2, '0');
+      secondsEl.textContent = String(seconds).padStart(2, '0');
+    }
+
+    function formatICSDate(d) {
+      return d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    }
+
+    function downloadCalendar() {
+      const start = formatICSDate(weddingDate);
+      const end = formatICSDate(new Date(weddingDate.getTime() + 4 * 60 * 60 * 1000));
+      const ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Wedding Countdown//EN',
+        'BEGIN:VEVENT',
+        'UID:wedding-' + start + '@countdown',
+        'DTSTAMP:' + formatICSDate(new Date()),
+        'DTSTART:' + start,
+        'DTEND:' + end,
+        'SUMMARY:Our Wedding',
+        'DESCRIPTION:We can\'t wait to celebrate with you!',
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].join('\r\n');
+
+      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.getElementById('add-to-calendar');
+      a.href = url;
+      a.download = 'wedding.ics';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    document.getElementById('add-to-calendar').addEventListener('click', function(e) {
+      e.preventDefault();
+      downloadCalendar();
+    });
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+  </script>
+</body>
+</html>
