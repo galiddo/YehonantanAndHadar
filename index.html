@@ -1,297 +1,471 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Save the Date — Hadar & Yehonatan</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="light"/>
+  <title>Hadar & Yehonatan</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet"/>
+
   <style>
     :root {
-      --beige: #F7F4EF;
-      --pink: #EE5C74;
-      --pink-soft: rgba(238, 92, 116, 0.12);
+      --bg:     #ede8dd;
+      --pink:   #ea5a77;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html {
-      -webkit-text-size-adjust: 100%;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      min-height: 100vh;
-      min-height: -webkit-fill-available;
-      font-family: 'Dancing Script', cursive;
-      background: var(--beige);
+      background: var(--bg);
       color: var(--pink);
+      font-family: 'Permanent Marker', cursive;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem;
-      padding-left: max(1.5rem, env(safe-area-inset-left));
-      padding-right: max(1.5rem, env(safe-area-inset-right));
-      padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
-      overflow-x: hidden;
+      padding: max(env(safe-area-inset-top), 40px) 24px max(env(safe-area-inset-bottom), 40px);
+      -webkit-font-smoothing: antialiased;
     }
 
-    .container {
+    main {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .header {
       text-align: center;
-      max-width: 420px;
       width: 100%;
     }
 
-    .title {
-      font-size: clamp(2.75rem, 11vw, 3.75rem);
-      font-weight: 700;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
-      color: var(--pink);
-      margin-bottom: 0.35rem;
+    .save-the-date {
+      font-size: clamp(2.4rem, 10vw, 3rem);
       line-height: 1.1;
+      margin-bottom: 10px;
+      letter-spacing: 0.03em;
     }
 
     .names {
-      font-size: clamp(1.85rem, 6.5vw, 2.4rem);
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--pink);
-      margin-bottom: 0.85rem;
-      letter-spacing: 0.02em;
+      font-size: clamp(1.6rem, 7.5vw, 2rem);
+      line-height: 1.3;
     }
 
-    .heart {
-      width: clamp(60px, 20vw, 88px);
-      height: clamp(60px, 20vw, 88px);
-      margin: 0.6rem auto 1.5rem;
-      color: var(--pink);
+    .heart-icon {
+      width: 100%;
+      max-width: 200px;
+      margin: 12px 0;
+      animation: heartbeat 2s ease-in-out infinite;
     }
 
-    .countdown {
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      10%, 30% { transform: scale(1.1); }
+      20%, 40% { transform: scale(0.95); }
+    }
+
+    .timer {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      width: 100%;
+    }
+
+    .t-unit {
+      background: rgba(255,255,255,0.65);
+      border: 2.5px solid var(--pink);
+      border-radius: 12px;
+      padding: 16px 8px 12px;
       display: flex;
-      justify-content: center;
-      gap: 0.6rem;
-      margin-bottom: 1.75rem;
-    }
-
-    .countdown-unit {
-      background: #fff;
-      padding: 1rem 0.6rem;
-      min-width: 0;
-      flex: 1 1 0;
-      max-width: 88px;
-      border: 2px solid var(--pink);
-      border-radius: 14px;
-    }
-
-    .countdown-value {
-      font-family: 'Dancing Script', cursive;
-      font-size: clamp(1.9rem, 8.5vw, 2.5rem);
-      font-weight: 700;
-      color: var(--pink);
-      display: block;
-      line-height: 1.1;
-    }
-
-    .countdown-label {
-      font-size: clamp(0.9rem, 3.5vw, 1.05rem);
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--pink);
-      margin-top: 0.2rem;
-      letter-spacing: 0.02em;
-    }
-
-    .date {
-      font-size: clamp(1.6rem, 5.5vw, 2rem);
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--pink);
-      margin-bottom: 0.3rem;
-      letter-spacing: 0.02em;
-    }
-
-    .location {
-      font-size: clamp(1.35rem, 4.5vw, 1.6rem);
-      font-weight: 600;
-      text-transform: uppercase;
-      color: var(--pink);
-      margin-bottom: 1.75rem;
-      letter-spacing: 0.02em;
-    }
-
-    .add-to-calendar {
-      display: inline-flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      min-height: 56px;
-      padding: 1rem 2.25rem;
-      font-family: 'Dancing Script', cursive;
-      font-size: 1.6rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-      text-transform: uppercase;
-      color: #fff;
+      gap: 5px;
+    }
+
+    .t-num {
+      font-size: clamp(1.6rem, 7vw, 2rem);
+      line-height: 1;
+    }
+    .t-num.tick {
+      animation: bounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes bounce {
+      0% { transform: scale(0.85); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .t-lbl {
+      font-size: clamp(0.75rem, 3.8vw, 0.9rem);
+    }
+
+    .event-info {
+      text-align: center;
+      width: 100%;
+    }
+
+    .event-date {
+      font-size: clamp(1.5rem, 6.5vw, 1.8rem);
+      margin-bottom: 6px;
+      line-height: 1.2;
+    }
+
+    .event-location {
+      font-size: clamp(1.2rem, 5.5vw, 1.45rem);
+      line-height: 1.3;
+    }
+
+    /* ── UNIFIED BUTTON STYLE ── */
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .btn {
       background: var(--pink);
+      color: #fff;
       border: none;
-      border-radius: 999px;
+      border-radius: 50px;
+      padding: 13px 28px;
+      font-family: 'Permanent Marker', cursive;
+      font-size: 1.05rem;
       cursor: pointer;
+      box-shadow: 0 5px 0 rgba(234,90,119,0.5);
+      transition: transform 0.1s, box-shadow 0.1s;
       -webkit-tap-highlight-color: transparent;
       text-decoration: none;
-      transition: transform 0.15s, opacity 0.15s;
-      box-shadow: 0 4px 16px var(--pink-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
 
-    .add-to-calendar:hover,
-    .add-to-calendar:focus {
-      opacity: 0.95;
-      transform: scale(1.02);
+    .btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 rgba(234,90,119,0.5);
     }
 
-    .add-to-calendar:active {
-      transform: scale(0.98);
+    .btn-icon {
+      font-size: 1.3rem;
     }
 
-    .add-to-calendar svg {
-      width: 22px;
-      height: 22px;
+    #celebration { display: none; }
+
+    .celeb-content {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      width: 100%;
+    }
+
+    .celeb-title {
+      font-size: clamp(2.2rem, 9vw, 2.8rem);
+      line-height: 1.2;
+    }
+
+    .celeb-subtitle {
+      font-size: clamp(1.3rem, 6vw, 1.6rem);
+      line-height: 1.3;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(6px);
+      z-index: 500;
+      display: flex;
+      align-items: flex-end;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+    .overlay.open { opacity: 1; pointer-events: all; }
+
+    .sheet {
+      width: 100%;
+      background: #fff;
+      border-radius: 20px 20px 0 0;
+      padding: 12px 20px max(env(safe-area-inset-bottom), 32px);
+      transform: translateY(100%);
+      transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
+    }
+    .overlay.open .sheet { transform: translateY(0); }
+
+    .handle {
+      width: 36px;
+      height: 4px;
+      background: #d0d0d0;
+      border-radius: 2px;
+      margin: 0 auto 20px;
+    }
+
+    .sheet-title {
+      font-family: 'Permanent Marker', cursive;
+      font-size: 1.25rem;
+      color: var(--pink);
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    .opt {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px;
+      border: 2.5px solid var(--pink);
+      border-radius: 14px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      text-decoration: none;
+      color: var(--pink);
+      background: rgba(234,90,119,0.06);
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s;
+    }
+    .opt:active { background: rgba(234,90,119,0.18); }
+
+    .opt-icon {
+      font-size: 32px;
+      width: 44px;
+      height: 44px;
+      display: grid;
+      place-items: center;
       flex-shrink: 0;
     }
+
+    .opt-text {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .opt-name {
+      font-family: 'Permanent Marker', cursive;
+      font-size: 1.05rem;
+    }
+
+    .opt-desc {
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 0.88rem;
+      opacity: 0.75;
+      font-weight: 400;
+    }
+
+    .sheet-cancel {
+      width: 100%;
+      padding: 16px;
+      margin-top: 8px;
+      background: transparent;
+      border: 2.5px solid var(--pink);
+      border-radius: 14px;
+      color: var(--pink);
+      font-family: 'Permanent Marker', cursive;
+      font-size: 1.05rem;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: background 0.15s;
+    }
+    .sheet-cancel:active { background: rgba(234,90,119,0.1); }
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <h1 class="title">Save the Date</h1>
-    <p class="names">Hadar + Yehonatan</p>
-    <svg class="heart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+  <main>
+
+    <div class="header">
+      <div class="save-the-date">SAVE THE DATE</div>
+      <div class="names">Hadar and Yehonatan</div>
+    </div>
+
+    <svg class="heart-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M50 85 C50 85, 20 60, 20 40 C20 25, 30 20, 40 25 C45 27.5, 47.5 32.5, 50 37.5 C52.5 32.5, 55 27.5, 60 25 C70 20, 80 25, 80 40 C80 60, 50 85, 50 85 Z"
+            fill="#ea5a77" stroke="#ea5a77" stroke-width="2"/>
     </svg>
-    <div class="countdown">
-      <div class="countdown-unit">
-        <span class="countdown-value" id="days">—</span>
-        <span class="countdown-label">Days</span>
+
+    <div id="countdown-section" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 24px;">
+
+      <div class="timer" id="timer-grid"></div>
+
+      <div class="event-info">
+        <div class="event-date">4 September 2026</div>
+        <div class="event-location">"Mona" Jerusalem</div>
       </div>
-      <div class="countdown-unit">
-        <span class="countdown-value" id="hours">—</span>
-        <span class="countdown-label">Hours</span>
-      </div>
-      <div class="countdown-unit">
-        <span class="countdown-value" id="minutes">—</span>
-        <span class="countdown-label">Mins</span>
-      </div>
-      <div class="countdown-unit">
-        <span class="countdown-value" id="seconds">—</span>
-        <span class="countdown-label">Secs</span>
+
+      <div class="button-group">
+        <button class="btn" onclick="openSheet()">
+          <span class="btn-icon">📅</span>
+          <span>Add to Calendar</span>
+        </button>
+
+        <a class="btn" href="https://ul.waze.com/ul?q=Mona%20Jerusalem&navigate=yes" target="_blank" rel="noopener">
+          <span class="btn-icon">🗺️</span>
+          <span>Navigate with Waze</span>
+        </a>
+
+        <a class="btn" href="https://open.spotify.com/playlist/3K7p8dvlss3klkHgZacXag?si=Ttohk8EtRuGqMfXL3Uy9BA&pi=2SG9bgXJRtGEJ" target="_blank" rel="noopener">
+          <span class="btn-icon">🎵</span>
+          <span>Wedding Playlist</span>
+        </a>
       </div>
     </div>
-    <p class="date" id="wedding-date">4 September 2026</p>
-    <p class="location">"Mona" Jerusalem</p>
-    <a href="#" id="add-to-calendar" class="add-to-calendar" download="wedding.ics">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-        <line x1="16" y1="2" x2="16" y2="6"/>
-        <line x1="8" y1="2" x2="8" y2="6"/>
-        <line x1="3" y1="10" x2="21" y2="10"/>
-      </svg>
-      Add to Calendar
-    </a>
+
+    <div id="celebration">
+      <div class="celeb-content">
+        <svg class="heart-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M50 85 C50 85, 20 60, 20 40 C20 25, 30 20, 40 25 C45 27.5, 47.5 32.5, 50 37.5 C52.5 32.5, 55 27.5, 60 25 C70 20, 80 25, 80 40 C80 60, 50 85, 50 85 Z"
+                fill="#ea5a77" stroke="#ea5a77" stroke-width="2"/>
+        </svg>
+
+        <div class="celeb-title">The Wedding<br>is HERE!</div>
+        <div class="celeb-subtitle">Time to celebrate! 🎉</div>
+
+        <div class="event-info">
+          <div class="event-date">Hadar & Yehonatan</div>
+          <div class="event-location">4 September 2026</div>
+        </div>
+
+        <div class="button-group">
+          <button class="btn" onclick="openSheet()">
+            <span class="btn-icon">📅</span>
+            <span>Add to Calendar</span>
+          </button>
+
+          <a class="btn" href="https://ul.waze.com/ul?q=Mona%20Jerusalem&navigate=yes" target="_blank" rel="noopener">
+            <span class="btn-icon">🗺️</span>
+            <span>Navigate with Waze</span>
+          </a>
+
+          <a class="btn" href="https://open.spotify.com/playlist/3K7p8dvlss3klkHgZacXag?si=Ttohk8EtRuGqMfXL3Uy9BA&pi=2SG9bgXJRtGEJ" target="_blank" rel="noopener">
+            <span class="btn-icon">🎵</span>
+            <span>Wedding Playlist</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="overlay" id="overlay" onclick="maybeClose(event)">
+    <div class="sheet">
+      <div class="handle"></div>
+      <p class="sheet-title">Add to Calendar</p>
+
+      <div class="opt" onclick="downloadICS()">
+        <div class="opt-icon">🗓️</div>
+        <div class="opt-text">
+          <span class="opt-name">Apple Calendar</span>
+          <span class="opt-desc">Download .ics file for iPhone</span>
+        </div>
+      </div>
+
+      <a class="opt" id="gcal-link" href="#" target="_blank" rel="noopener">
+        <div class="opt-icon">📅</div>
+        <div class="opt-text">
+          <span class="opt-name">Google Calendar</span>
+          <span class="opt-desc">Opens in browser</span>
+        </div>
+      </a>
+
+      <button class="sheet-cancel" onclick="closeSheet()">Cancel</button>
+    </div>
   </div>
 
   <script>
-    const weddingDate = new Date('2026-09-04T14:00:00');
+    var TARGET = new Date('2026-09-04T15:00:00');
+    var UNITS = [{id:'d',lbl:'Days'},{id:'h',lbl:'Hours'},{id:'m',lbl:'Mins'},{id:'s',lbl:'Secs'}];
 
-    const daysEl = document.getElementById('days');
-    const hoursEl = document.getElementById('hours');
-    const minutesEl = document.getElementById('minutes');
-    const secondsEl = document.getElementById('seconds');
+    var grid = document.getElementById('timer-grid');
+    UNITS.forEach(function(u) {
+      var cell = document.createElement('div');
+      cell.className = 't-unit';
+      var num = document.createElement('span');
+      num.id = u.id; num.className = 't-num'; num.textContent = '00';
+      var lbl = document.createElement('span');
+      lbl.className = 't-lbl'; lbl.textContent = u.lbl;
+      cell.appendChild(num); cell.appendChild(lbl); grid.appendChild(cell);
+    });
 
-    function formatDisplayDate(d) {
-      const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-      return d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
+    function pad(n) { return String(Math.max(0,n)).padStart(2,'0'); }
+
+    function set(id, val) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      var p = pad(val);
+      if (el.textContent !== p) {
+        el.textContent = p;
+        el.classList.remove('tick');
+        void el.offsetWidth;
+        el.classList.add('tick');
+      }
     }
 
-    var el = document.getElementById('wedding-date');
-    if (el) el.textContent = formatDisplayDate(weddingDate);
-
-    function updateCountdown() {
-      const now = new Date();
-      const diff = weddingDate - now;
-
+    function tick() {
+      var diff = TARGET - new Date();
       if (diff <= 0) {
-        daysEl.textContent = '0';
-        hoursEl.textContent = '00';
-        minutesEl.textContent = '00';
-        secondsEl.textContent = '00';
+        set('d',0); set('h',0); set('m',0); set('s',0);
+        document.getElementById('countdown-section').style.display = 'none';
+        document.getElementById('celebration').style.display = 'block';
         return;
       }
+      var t = Math.floor(diff / 1000);
+      set('d', Math.floor(t / 86400));
+      set('h', Math.floor((t % 86400) / 3600));
+      set('m', Math.floor((t % 3600) / 60));
+      set('s', t % 60);
+      var delay = 1000 - (diff % 1000);
+      if (delay < 50) delay += 1000;
+      setTimeout(tick, delay);
+    }
+    tick();
 
-      const totalSeconds = Math.floor(diff / 1000);
-      const seconds = totalSeconds % 60;
-      const totalMinutes = Math.floor(totalSeconds / 60);
-      const minutes = totalMinutes % 60;
-      const totalHours = Math.floor(totalMinutes / 60);
-      const hours = totalHours % 24;
-      const days = Math.floor(totalHours / 24);
-
-      daysEl.textContent = days;
-      hoursEl.textContent = String(hours).padStart(2, '0');
-      minutesEl.textContent = String(minutes).padStart(2, '0');
-      secondsEl.textContent = String(seconds).padStart(2, '0');
+    function openSheet() {
+      var gcal = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
+        + '&text=Hadar+%26+Yehonatan%27s+Wedding'
+        + '&dates=20260904T150000/20260904T220000'
+        + '&details=Join+us+at+Mona+Jerusalem!'
+        + '&location=Mona+Jerusalem';
+      document.getElementById('gcal-link').href = gcal;
+      document.getElementById('overlay').classList.add('open');
     }
 
-    function formatICSDate(d) {
-      return d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+    function closeSheet() {
+      document.getElementById('overlay').classList.remove('open');
     }
 
-    function downloadCalendar(e) {
-      e.preventDefault();
-      const start = formatICSDate(weddingDate);
-      const end = formatICSDate(new Date(weddingDate.getTime() + 4 * 60 * 60 * 1000));
-      const ics = [
-        'BEGIN:VCALENDAR',
-        'VERSION:2.0',
-        'PRODID:-//Wedding Countdown//EN',
-        'BEGIN:VEVENT',
-        'UID:wedding-' + start + '@countdown',
-        'DTSTAMP:' + formatICSDate(new Date()),
-        'DTSTART:' + start,
-        'DTEND:' + end,
-        'SUMMARY:Hadar & Yehonatan Wedding',
-        'DESCRIPTION:Save the date! We can\'t wait to celebrate with you.',
-        'LOCATION:Mona, Jerusalem',
-        'END:VEVENT',
-        'END:VCALENDAR'
+    function maybeClose(e) {
+      if (e.target === document.getElementById('overlay')) closeSheet();
+    }
+
+    function downloadICS() {
+      var lines = [
+        'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Wedding//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH',
+        'BEGIN:VEVENT','UID:hadar-yehonatan@2026','DTSTART:20260904T150000','DTEND:20260904T220000',
+        'SUMMARY:Hadar & Yehonatan\'s Wedding 💕','DESCRIPTION:Mona Jerusalem','LOCATION:Mona Jerusalem',
+        'STATUS:CONFIRMED','TRANSP:OPAQUE',
+        'BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY','DESCRIPTION:Wedding tomorrow!','END:VALARM',
+        'END:VEVENT','END:VCALENDAR'
       ].join('\r\n');
-
-      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-
-      var isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || (navigator.maxTouchPoints && navigator.maxTouchPoints > 0);
-      if (isMobile) {
-        var dataUrl = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(ics);
-        var opened = window.open(dataUrl, '_blank');
-        if (!opened) window.location.href = dataUrl;
-        URL.revokeObjectURL(url);
-      } else {
-        var a = document.getElementById('add-to-calendar');
-        a.href = url;
-        a.download = 'wedding.ics';
-        a.click();
-        setTimeout(function() { URL.revokeObjectURL(url); }, 500);
-      }
+      var blob = new Blob([lines], {type:'text/calendar'});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url; a.download = 'hadar-yehonatan-wedding.ics';
+      a.click();
+      URL.revokeObjectURL(url);
+      setTimeout(closeSheet, 300);
     }
-
-    document.getElementById('add-to-calendar').addEventListener('click', downloadCalendar);
-
-    updateCountdown();
-    setInterval(updateCountdown, 1000);
   </script>
 </body>
 </html>
