@@ -33,6 +33,7 @@
       font-family: 'Felix007', system-ui, sans-serif;
       font-weight: 300;
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -420,6 +421,60 @@
       background: #fdecea;
       color: #b03a2e;
       border: 1px solid #f5b7b1;
+    }
+
+    /* Compact mobile layout — fit everything in one viewport */
+    @media (max-width: 480px) {
+      body {
+        padding: max(env(safe-area-inset-top), 16px) 22px max(env(safe-area-inset-bottom), 16px);
+      }
+      main { gap: 14px; }
+      .header { gap: 8px; }
+      .names {
+        font-size: clamp(1.6rem, 7.4vw, 2.1rem);
+        line-height: 1.15;
+      }
+      .venue-img { max-width: 190px; }
+      .divider { display: none; }
+      .event-info { gap: 3px; }
+      .event-date {
+        font-size: clamp(1.3rem, 5.8vw, 1.7rem);
+        letter-spacing: 0.03em;
+      }
+      .event-location { font-size: 0.92rem; }
+      .event-address {
+        font-size: 0.8rem;
+        margin-top: 0;
+      }
+      .actions { gap: 10px; }
+      .btn-primary {
+        padding: 13px 22px;
+        font-size: 1rem;
+      }
+      .btn-primary-icon { width: 18px; height: 18px; }
+      .button-grid { gap: 10px; }
+      .btn-tile {
+        aspect-ratio: auto;
+        padding: 12px 8px;
+        gap: 6px;
+        min-height: 86px;
+      }
+      .btn-tile-icon { width: 28px; height: 28px; }
+      .btn-tile-label {
+        font-size: 0.8rem;
+        line-height: 1.15;
+      }
+    }
+
+    /* Even tighter for very short viewports */
+    @media (max-width: 480px) and (max-height: 720px) {
+      main { gap: 10px; }
+      .header { gap: 6px; }
+      .names { font-size: clamp(1.4rem, 6.6vw, 1.9rem); }
+      .venue-img { max-width: 160px; }
+      .btn-tile { min-height: 78px; padding: 10px 8px; }
+      .btn-tile-icon { width: 24px; height: 24px; }
+      .btn-tile-label { font-size: 0.76rem; }
     }
 
   </style>
