@@ -455,20 +455,16 @@
     }
     .color-picker input:focus { border-color: var(--gold); }
 
-    /* Mobile: stretch content to fill the whole viewport */
+    /* Mobile: identical gaps between sections, no over-stretch */
     @media (max-width: 480px) {
       body {
         padding: max(env(safe-area-inset-top), 18px) 22px max(env(safe-area-inset-bottom), 18px);
-        justify-content: flex-start;
       }
       main {
-        flex: 1;
-        gap: 0;
-        justify-content: space-between;
-        max-width: none;
+        gap: 22px;
       }
       .header {
-        gap: 14px;
+        gap: 22px;
         flex-shrink: 0;
       }
       .names {
