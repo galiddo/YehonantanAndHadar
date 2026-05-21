@@ -458,13 +458,13 @@
         <span class="btn-tile-label">הוסף את התאריך ליומן</span>
       </button>
 
-      <a class="btn-tile" href="https://www.waze.com/ul?q=%D7%97%D7%A0%D7%99%D7%95%D7%9F%20%D7%9E%D7%95%D7%A0%D7%90%20%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D&navigate=yes" target="_blank" rel="noopener">
+      <button class="btn-tile" type="button" onclick="openParking()">
         <svg class="btn-tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
           <rect x="4" y="4" width="16" height="16" rx="2"/>
           <path d="M9.5 17V7.5h3.2a3 3 0 010 6H9.5"/>
         </svg>
         <span class="btn-tile-label">ניווט לחניית אורחים</span>
-      </a>
+      </button>
 
       <a class="btn-tile" href="https://open.spotify.com/playlist/3K7p8dvlss3klkHgZacXag?si=Ttohk8EtRuGqMfXL3Uy9BA&pi=2SG9bgXJRtGEJ" target="_blank" rel="noopener">
         <svg class="btn-tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
@@ -604,6 +604,25 @@
     </div>
   </div>
 
+  <div class="overlay" id="parking-overlay" onclick="maybeCloseParking(event)">
+    <div class="sheet">
+      <div class="handle"></div>
+      <p class="sheet-title">חניית אורחים</p>
+
+      <p class="form-info" style="margin-bottom: 16px;">קחו כרטיס כרגיל — במונא תחכה לכם מדבקה</p>
+
+      <a class="btn-primary" href="https://www.waze.com/ul?q=%D7%97%D7%A0%D7%99%D7%95%D7%9F%20%D7%9E%D7%95%D7%A0%D7%90%20%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D&navigate=yes" target="_blank" rel="noopener" onclick="closeParking()">
+        <svg class="btn-primary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 21s-7-7-7-12a7 7 0 0114 0c0 5-7 12-7 12z"/>
+          <circle cx="12" cy="9" r="2.5"/>
+        </svg>
+        <span>פתיחה ב-Waze</span>
+      </a>
+
+      <button class="sheet-cancel" onclick="closeParking()" style="margin-top: 12px;">סגירה</button>
+    </div>
+  </div>
+
   <script>
     function openSheet() {
       var gcal = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
@@ -700,6 +719,19 @@
 
     function maybeCloseRSVP(e) {
       if (e.target === document.getElementById('rsvp-overlay')) closeRSVP();
+    }
+
+    // ─── Parking sheet ───
+    function openParking() {
+      document.getElementById('parking-overlay').classList.add('open');
+    }
+
+    function closeParking() {
+      document.getElementById('parking-overlay').classList.remove('open');
+    }
+
+    function maybeCloseParking(e) {
+      if (e.target === document.getElementById('parking-overlay')) closeParking();
     }
 
     function submitRSVPForm(e) {
