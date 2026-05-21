@@ -335,6 +335,18 @@
       border-color: var(--gold);
     }
 
+    .form-select {
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23b08968' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+      background-repeat: no-repeat;
+      background-position: left 14px center;
+      background-size: 12px;
+      padding-left: 36px;
+      cursor: pointer;
+    }
+
     .form-row {
       display: grid;
       grid-template-columns: 2fr 1fr;
@@ -502,7 +514,13 @@
           </div>
           <div class="form-group">
             <label class="form-label" for="bus-count">נוסעים</label>
-            <input class="form-input" id="bus-count" name="passengers" type="number" min="1" max="10" value="1" inputmode="numeric" required/>
+            <select class="form-input form-select" id="bus-count" name="passengers" required>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
           </div>
         </div>
 
