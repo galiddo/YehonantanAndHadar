@@ -293,6 +293,97 @@
       background: var(--gold);
       color: #fff;
     }
+
+    /* Form */
+    .form-group {
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .form-label {
+      font-family: 'Ellinia CLM', Georgia, serif;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: var(--text);
+    }
+
+    .form-input,
+    .form-textarea {
+      width: 100%;
+      padding: 11px 13px;
+      background: #fff;
+      border: 1px solid var(--gold-soft);
+      border-radius: 4px;
+      font-family: 'Ellinia CLM', Georgia, serif;
+      font-weight: 300;
+      font-size: 1rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s;
+      direction: rtl;
+    }
+
+    .form-textarea {
+      resize: vertical;
+      min-height: 60px;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      border-color: var(--gold);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 10px;
+    }
+    .form-row .form-group { margin-bottom: 0; }
+
+    .form-submit {
+      width: 100%;
+      padding: 14px;
+      margin-top: 6px;
+      background: var(--gold);
+      color: #fff;
+      border: 1px solid var(--gold);
+      border-radius: 2px;
+      font-family: 'Ellinia CLM', Georgia, serif;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .form-submit:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .form-status {
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 4px;
+      font-family: 'Ellinia CLM', Georgia, serif;
+      font-weight: 300;
+      font-size: 0.95rem;
+      text-align: center;
+      display: none;
+    }
+    .form-status.success {
+      display: block;
+      background: rgba(176, 137, 104, 0.08);
+      color: var(--gold);
+      border: 1px solid var(--gold-soft);
+    }
+    .form-status.error {
+      display: block;
+      background: #fdecea;
+      color: #b03a2e;
+      border: 1px solid #f5b7b1;
+    }
   </style>
 </head>
 
@@ -338,7 +429,7 @@
         <span class="btn-tile-label">פלייליסט להנעים את הנסיעה</span>
       </a>
 
-      <button class="btn-tile" type="button">
+      <button class="btn-tile" type="button" onclick="openBus()">
         <svg class="btn-tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
           <rect x="3.5" y="5" width="17" height="11" rx="2"/>
           <path d="M3.5 12h17"/>
@@ -391,6 +482,46 @@
     </div>
   </div>
 
+  <div class="overlay" id="bus-overlay" onclick="maybeCloseBus(event)">
+    <div class="sheet">
+      <div class="handle"></div>
+      <p class="sheet-title">הרשמה להסעה</p>
+
+      <form id="bus-form" onsubmit="submitBusForm(event)">
+        <div class="form-group">
+          <label class="form-label" for="bus-name">שם מלא</label>
+          <input class="form-input" id="bus-name" name="name" type="text" autocomplete="name" required/>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="bus-phone">טלפון</label>
+            <input class="form-input" id="bus-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="bus-count">נוסעים</label>
+            <input class="form-input" id="bus-count" name="passengers" type="number" min="1" max="10" value="1" inputmode="numeric" required/>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="bus-pickup">נקודת איסוף</label>
+          <input class="form-input" id="bus-pickup" name="pickup" type="text" placeholder="לדוגמה: תל אביב"/>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="bus-notes">הערות</label>
+          <textarea class="form-textarea" id="bus-notes" name="notes" rows="2"></textarea>
+        </div>
+
+        <button class="form-submit" type="submit" id="bus-submit">שליחה</button>
+        <p class="form-status" id="bus-status"></p>
+      </form>
+
+      <button class="sheet-cancel" onclick="closeBus()" style="margin-top: 12px;">ביטול</button>
+    </div>
+  </div>
+
   <script>
     function openSheet() {
       var gcal = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
@@ -408,6 +539,70 @@
 
     function maybeClose(e) {
       if (e.target === document.getElementById('overlay')) closeSheet();
+    }
+
+    // ─── Shuttle signup form ───
+    // Replace this with your Formspree endpoint after signing up at https://formspree.io
+    // (Create a new form, copy the URL it gives you — looks like https://formspree.io/f/xxxxxxxx)
+    var FORMSPREE_URL = 'https://formspree.io/f/REPLACE_WITH_YOUR_FORM_ID';
+
+    function openBus() {
+      var status = document.getElementById('bus-status');
+      status.className = 'form-status';
+      status.textContent = '';
+      var submit = document.getElementById('bus-submit');
+      submit.disabled = false;
+      submit.textContent = 'שליחה';
+      document.getElementById('bus-overlay').classList.add('open');
+    }
+
+    function closeBus() {
+      document.getElementById('bus-overlay').classList.remove('open');
+    }
+
+    function maybeCloseBus(e) {
+      if (e.target === document.getElementById('bus-overlay')) closeBus();
+    }
+
+    function submitBusForm(e) {
+      e.preventDefault();
+      var form = e.target;
+      var submit = document.getElementById('bus-submit');
+      var status = document.getElementById('bus-status');
+
+      if (FORMSPREE_URL.indexOf('REPLACE_WITH_YOUR_FORM_ID') !== -1) {
+        status.className = 'form-status error';
+        status.textContent = 'הטופס עדיין לא מחובר. אנא צרו קשר ישירות.';
+        return;
+      }
+
+      submit.disabled = true;
+      submit.textContent = 'שולח...';
+      status.className = 'form-status';
+      status.textContent = '';
+
+      var data = new FormData(form);
+      fetch(FORMSPREE_URL, {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      }).then(function(resp) {
+        if (resp.ok) {
+          status.className = 'form-status success';
+          status.textContent = 'תודה! נחזור אליכם עם פרטי ההסעה.';
+          form.reset();
+          submit.textContent = 'נשלח ✓';
+        } else {
+          return resp.json().then(function(err) {
+            throw new Error((err && err.error) || 'שליחה נכשלה');
+          });
+        }
+      }).catch(function() {
+        status.className = 'form-status error';
+        status.textContent = 'משהו השתבש. אנא נסו שוב מאוחר יותר.';
+        submit.disabled = false;
+        submit.textContent = 'שליחה';
+      });
     }
 
     function downloadICS() {
