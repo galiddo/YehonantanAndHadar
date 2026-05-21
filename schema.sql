@@ -11,3 +11,14 @@ CREATE TABLE IF NOT EXISTS bus_signups (
 );
 
 CREATE INDEX IF NOT EXISTS idx_bus_signups_created_at ON bus_signups(created_at DESC);
+
+CREATE TABLE IF NOT EXISTS rsvps (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  guests INTEGER NOT NULL,
+  ip TEXT,
+  user_agent TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_rsvps_created_at ON rsvps(created_at DESC);

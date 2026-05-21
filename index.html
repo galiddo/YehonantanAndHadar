@@ -137,12 +137,48 @@
       margin-top: -2px;
     }
 
+    .actions {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: var(--gold);
+      color: #fff;
+      border: 1px solid var(--gold);
+      border-radius: 4px;
+      padding: 18px 22px;
+      font-family: 'Ellinia CLM', Georgia, serif;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .btn-primary:hover, .btn-primary:active {
+      background: #97755a;
+      border-color: #97755a;
+    }
+    .btn-primary-icon {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+    }
+
     .button-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
       width: 100%;
-      margin-top: 4px;
     }
 
     .btn-tile {
@@ -414,6 +450,15 @@
       <div class="event-address">שמואל הנגיד 12, ירושלים</div>
     </div>
 
+    <div class="actions">
+      <button class="btn-primary" onclick="openRSVP()">
+        <svg class="btn-primary-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M8.5 12.5l2.5 2.5 5-5.5"/>
+        </svg>
+        <span>אישור הגעה</span>
+      </button>
+
     <div class="button-grid">
       <button class="btn-tile" onclick="openSheet()">
         <svg class="btn-tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
@@ -452,6 +497,7 @@
         </svg>
         <span class="btn-tile-label">הרשמה להסעה</span>
       </button>
+    </div>
     </div>
 
   </main>
@@ -542,6 +588,39 @@
     </div>
   </div>
 
+  <div class="overlay" id="rsvp-overlay" onclick="maybeCloseRSVP(event)">
+    <div class="sheet">
+      <div class="handle"></div>
+      <p class="sheet-title">אישור הגעה</p>
+
+      <form id="rsvp-form" onsubmit="submitRSVPForm(event)">
+        <input type="text" name="_honey" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"/>
+
+        <div class="form-group">
+          <label class="form-label" for="rsvp-name">שם מלא</label>
+          <input class="form-input" id="rsvp-name" name="name" type="text" autocomplete="name" required/>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="rsvp-guests">מספר אורחים</label>
+          <select class="form-input form-select" id="rsvp-guests" name="guests" required>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+          </select>
+        </div>
+
+        <button class="form-submit" type="submit" id="rsvp-submit">שליחה</button>
+        <p class="form-status" id="rsvp-status"></p>
+      </form>
+
+      <button class="sheet-cancel" onclick="closeRSVP()" style="margin-top: 12px;">ביטול</button>
+    </div>
+  </div>
+
   <script>
     function openSheet() {
       var gcal = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
@@ -606,6 +685,62 @@
         if (r.ok && r.body && r.body.ok) {
           status.className = 'form-status success';
           status.textContent = 'תודה! נחזור אליכם עם פרטי ההסעה.';
+          form.reset();
+          submit.textContent = 'נשלח ✓';
+        } else {
+          throw new Error((r.body && r.body.error) || 'שליחה נכשלה');
+        }
+      }).catch(function() {
+        status.className = 'form-status error';
+        status.textContent = 'משהו השתבש. אנא נסו שוב מאוחר יותר.';
+        submit.disabled = false;
+        submit.textContent = 'שליחה';
+      });
+    }
+
+    // ─── RSVP form ───
+    var RSVP_ENDPOINT = '/rsvp';
+
+    function openRSVP() {
+      var status = document.getElementById('rsvp-status');
+      status.className = 'form-status';
+      status.textContent = '';
+      var submit = document.getElementById('rsvp-submit');
+      submit.disabled = false;
+      submit.textContent = 'שליחה';
+      document.getElementById('rsvp-overlay').classList.add('open');
+    }
+
+    function closeRSVP() {
+      document.getElementById('rsvp-overlay').classList.remove('open');
+    }
+
+    function maybeCloseRSVP(e) {
+      if (e.target === document.getElementById('rsvp-overlay')) closeRSVP();
+    }
+
+    function submitRSVPForm(e) {
+      e.preventDefault();
+      var form = e.target;
+      var submit = document.getElementById('rsvp-submit');
+      var status = document.getElementById('rsvp-status');
+
+      submit.disabled = true;
+      submit.textContent = 'שולח...';
+      status.className = 'form-status';
+      status.textContent = '';
+
+      var data = new FormData(form);
+      fetch(RSVP_ENDPOINT, {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      }).then(function(resp) {
+        return resp.json().then(function(body) { return { ok: resp.ok, body: body }; });
+      }).then(function(r) {
+        if (r.ok && r.body && r.body.ok) {
+          status.className = 'form-status success';
+          status.textContent = 'תודה! מחכים לכם.';
           form.reset();
           submit.textContent = 'נשלח ✓';
         } else {
