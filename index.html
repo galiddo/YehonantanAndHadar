@@ -9,66 +9,86 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
 
   <style>
     :root {
-      --bg:     #ede8dd;
-      --pink:   #ea5a77;
+      --bg:        #faf6f1;
+      --gold:      #b08968;
+      --gold-soft: #d4baa0;
+      --text:      #2a2a2a;
+      --muted:     #7a7066;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       background: var(--bg);
-      color: var(--pink);
-      font-family: 'Permanent Marker', cursive;
+      color: var(--text);
+      font-family: 'Playfair Display', Georgia, serif;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: max(env(safe-area-inset-top), 40px) 24px max(env(safe-area-inset-bottom), 40px);
+      padding: max(env(safe-area-inset-top), 56px) 28px max(env(safe-area-inset-bottom), 56px);
       -webkit-font-smoothing: antialiased;
     }
 
     main {
       width: 100%;
-      max-width: 400px;
+      max-width: 420px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 32px;
+      gap: 40px;
     }
 
     .header {
       text-align: center;
       width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
     }
 
-    .save-the-date {
-      font-size: clamp(2.4rem, 10vw, 3rem);
-      line-height: 1.1;
-      margin-bottom: 10px;
-      letter-spacing: 0.03em;
+    .eyebrow {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: var(--gold);
+      padding-left: 0.42em;
+    }
+
+    .divider {
+      width: 88px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.65;
     }
 
     .names {
-      font-size: clamp(1.6rem, 7.5vw, 2rem);
-      line-height: 1.3;
+      font-size: clamp(2.2rem, 9.5vw, 2.8rem);
+      font-weight: 500;
+      font-style: italic;
+      line-height: 1.15;
+      color: var(--text);
     }
 
     .heart-icon {
-      width: 100%;
-      max-width: 200px;
-      margin: 12px 0;
-      animation: heartbeat 2s ease-in-out infinite;
+      width: 30px;
+      height: 30px;
+      color: var(--gold);
+      animation: heartbeat 2.6s ease-in-out infinite;
     }
 
     @keyframes heartbeat {
       0%, 100% { transform: scale(1); }
-      10%, 30% { transform: scale(1.1); }
-      20%, 40% { transform: scale(0.95); }
+      15%, 35% { transform: scale(1.12); }
+      25%, 45% { transform: scale(0.96); }
     }
 
     .timer {
@@ -79,84 +99,96 @@
     }
 
     .t-unit {
-      background: rgba(255,255,255,0.65);
-      border: 2.5px solid var(--pink);
-      border-radius: 12px;
-      padding: 16px 8px 12px;
+      background: #ffffff;
+      border: 1px solid var(--gold-soft);
+      border-radius: 4px;
+      padding: 18px 6px 14px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px;
+      gap: 8px;
     }
 
     .t-num {
-      font-size: clamp(1.6rem, 7vw, 2rem);
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.7rem, 7.5vw, 2.1rem);
+      font-weight: 500;
       line-height: 1;
+      color: var(--text);
     }
-    .t-num.tick {
-      animation: bounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
+    .t-num.tick { animation: bounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
     @keyframes bounce {
-      0% { transform: scale(0.85); }
-      50% { transform: scale(1.1); }
+      0%   { transform: scale(0.92); }
+      50%  { transform: scale(1.06); }
       100% { transform: scale(1); }
     }
 
     .t-lbl {
-      font-size: clamp(0.75rem, 3.8vw, 0.9rem);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.62rem;
+      font-weight: 400;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--muted);
     }
 
     .event-info {
       text-align: center;
       width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
     }
 
     .event-date {
-      font-size: clamp(1.5rem, 6.5vw, 1.8rem);
-      margin-bottom: 6px;
-      line-height: 1.2;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 6.5vw, 1.9rem);
+      font-weight: 500;
+      letter-spacing: 0.08em;
     }
 
     .event-location {
-      font-size: clamp(1.2rem, 5.5vw, 1.45rem);
-      line-height: 1.3;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.24em;
+      text-transform: uppercase;
+      color: var(--muted);
     }
 
-    /* ── UNIFIED BUTTON STYLE ── */
     .button-group {
       display: flex;
       flex-direction: column;
       gap: 12px;
       width: 100%;
-      margin-top: 8px;
+      margin-top: 4px;
     }
 
     .btn {
-      background: var(--pink);
-      color: #fff;
-      border: none;
-      border-radius: 50px;
-      padding: 13px 28px;
-      font-family: 'Permanent Marker', cursive;
-      font-size: 1.05rem;
+      background: transparent;
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      border-radius: 2px;
+      padding: 16px 22px;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.76rem;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
       cursor: pointer;
-      box-shadow: 0 5px 0 rgba(234,90,119,0.5);
-      transition: transform 0.1s, box-shadow 0.1s;
+      transition: background 0.2s ease, color 0.2s ease;
       -webkit-tap-highlight-color: transparent;
       text-decoration: none;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
+      padding-left: calc(22px + 0.3em);
     }
 
-    .btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 2px 0 rgba(234,90,119,0.5);
-    }
-
-    .btn-icon {
-      font-size: 1.3rem;
+    .btn:hover, .btn:active {
+      background: var(--gold);
+      color: #fff;
     }
 
     #celebration { display: none; }
@@ -170,21 +202,32 @@
       width: 100%;
     }
 
+    .celeb-content .heart-icon { width: 44px; height: 44px; }
+
     .celeb-title {
-      font-size: clamp(2.2rem, 9vw, 2.8rem);
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 8vw, 2.6rem);
+      font-weight: 500;
+      font-style: italic;
       line-height: 1.2;
     }
 
     .celeb-subtitle {
-      font-size: clamp(1.3rem, 6vw, 1.6rem);
-      line-height: 1.3;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
     }
 
+    /* Bottom sheet */
     .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(20, 18, 14, 0.45);
       backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
       z-index: 500;
       display: flex;
       align-items: flex-end;
@@ -196,28 +239,32 @@
 
     .sheet {
       width: 100%;
-      background: #fff;
+      background: var(--bg);
       border-radius: 20px 20px 0 0;
-      padding: 12px 20px max(env(safe-area-inset-bottom), 32px);
+      padding: 14px 22px max(env(safe-area-inset-bottom), 32px);
       transform: translateY(100%);
       transition: transform 0.35s cubic-bezier(0.32,0.72,0,1);
     }
     .overlay.open .sheet { transform: translateY(0); }
 
     .handle {
-      width: 36px;
-      height: 4px;
-      background: #d0d0d0;
+      width: 42px;
+      height: 3px;
+      background: var(--gold-soft);
       border-radius: 2px;
-      margin: 0 auto 20px;
+      margin: 0 auto 22px;
     }
 
     .sheet-title {
-      font-family: 'Permanent Marker', cursive;
-      font-size: 1.25rem;
-      color: var(--pink);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
       text-align: center;
+      color: var(--gold);
       margin-bottom: 18px;
+      padding-left: 0.32em;
     }
 
     .opt {
@@ -225,25 +272,28 @@
       align-items: center;
       gap: 14px;
       padding: 16px;
-      border: 2.5px solid var(--pink);
-      border-radius: 14px;
+      border: 1px solid var(--gold-soft);
+      border-radius: 4px;
       margin-bottom: 10px;
       cursor: pointer;
       text-decoration: none;
-      color: var(--pink);
-      background: rgba(234,90,119,0.06);
+      color: var(--text);
+      background: #fff;
       -webkit-tap-highlight-color: transparent;
-      transition: background 0.15s;
+      transition: background 0.15s, border-color 0.15s;
     }
-    .opt:active { background: rgba(234,90,119,0.18); }
+    .opt:hover, .opt:active {
+      background: #fbf6ef;
+      border-color: var(--gold);
+    }
 
     .opt-icon {
-      font-size: 32px;
-      width: 44px;
-      height: 44px;
+      width: 38px;
+      height: 38px;
       display: grid;
       place-items: center;
       flex-shrink: 0;
+      color: var(--gold);
     }
 
     .opt-text {
@@ -253,32 +303,39 @@
     }
 
     .opt-name {
-      font-family: 'Permanent Marker', cursive;
-      font-size: 1.05rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 1.02rem;
+      font-weight: 500;
     }
 
     .opt-desc {
-      font-family: system-ui, -apple-system, sans-serif;
-      font-size: 0.88rem;
-      opacity: 0.75;
-      font-weight: 400;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.78rem;
+      color: var(--muted);
     }
 
     .sheet-cancel {
       width: 100%;
       padding: 16px;
-      margin-top: 8px;
+      margin-top: 6px;
       background: transparent;
-      border: 2.5px solid var(--pink);
-      border-radius: 14px;
-      color: var(--pink);
-      font-family: 'Permanent Marker', cursive;
-      font-size: 1.05rem;
+      border: 1px solid var(--gold);
+      border-radius: 2px;
+      color: var(--gold);
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
-      transition: background 0.15s;
+      transition: background 0.15s, color 0.15s;
+      padding-left: calc(16px + 0.3em);
     }
-    .sheet-cancel:active { background: rgba(234,90,119,0.1); }
+    .sheet-cancel:hover, .sheet-cancel:active {
+      background: var(--gold);
+      color: #fff;
+    }
   </style>
 </head>
 
@@ -286,72 +343,48 @@
   <main>
 
     <div class="header">
-      <div class="save-the-date">SAVE THE DATE</div>
-      <div class="names">Hadar and Yehonatan</div>
+      <div class="eyebrow">save the date</div>
+      <div class="divider"></div>
+      <div class="names">Hadar &amp; Yehonatan</div>
+      <svg class="heart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 20.5s-7-4.4-7-10.4C5 6.7 6.9 5 9 5c1.4 0 2.4 0.9 3 2 0.6-1.1 1.6-2 3-2 2.1 0 4 1.7 4 5.1 0 6-7 10.4-7 10.4z"/>
+      </svg>
     </div>
 
-    <svg class="heart-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M50 85 C50 85, 20 60, 20 40 C20 25, 30 20, 40 25 C45 27.5, 47.5 32.5, 50 37.5 C52.5 32.5, 55 27.5, 60 25 C70 20, 80 25, 80 40 C80 60, 50 85, 50 85 Z"
-            fill="#ea5a77" stroke="#ea5a77" stroke-width="2"/>
-    </svg>
-
-    <div id="countdown-section" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 24px;">
+    <div id="countdown-section" style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 32px;">
 
       <div class="timer" id="timer-grid"></div>
 
       <div class="event-info">
-        <div class="event-date">4 September 2026</div>
-        <div class="event-location">"Mona" Jerusalem</div>
+        <div class="event-date">04 . 09 . 2026</div>
+        <div class="event-location">Mona &middot; Jerusalem</div>
       </div>
 
       <div class="button-group">
-        <button class="btn" onclick="openSheet()">
-          <span class="btn-icon">📅</span>
-          <span>Add to Calendar</span>
-        </button>
-
-        <a class="btn" href="https://ul.waze.com/ul?q=Mona%20Jerusalem&navigate=yes" target="_blank" rel="noopener">
-          <span class="btn-icon">🗺️</span>
-          <span>Navigate with Waze</span>
-        </a>
-
-        <a class="btn" href="https://open.spotify.com/playlist/3K7p8dvlss3klkHgZacXag?si=Ttohk8EtRuGqMfXL3Uy9BA&pi=2SG9bgXJRtGEJ" target="_blank" rel="noopener">
-          <span class="btn-icon">🎵</span>
-          <span>Wedding Playlist</span>
-        </a>
+        <button class="btn" onclick="openSheet()">Add to Calendar</button>
+        <a class="btn" href="https://ul.waze.com/ul?q=Mona%20Jerusalem&navigate=yes" target="_blank" rel="noopener">Navigate</a>
+        <a class="btn" href="https://open.spotify.com/playlist/3K7p8dvlss3klkHgZacXag?si=Ttohk8EtRuGqMfXL3Uy9BA&pi=2SG9bgXJRtGEJ" target="_blank" rel="noopener">Playlist</a>
       </div>
     </div>
 
     <div id="celebration">
       <div class="celeb-content">
-        <svg class="heart-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M50 85 C50 85, 20 60, 20 40 C20 25, 30 20, 40 25 C45 27.5, 47.5 32.5, 50 37.5 C52.5 32.5, 55 27.5, 60 25 C70 20, 80 25, 80 40 C80 60, 50 85, 50 85 Z"
-                fill="#ea5a77" stroke="#ea5a77" stroke-width="2"/>
+        <svg class="heart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 20.5s-7-4.4-7-10.4C5 6.7 6.9 5 9 5c1.4 0 2.4 0.9 3 2 0.6-1.1 1.6-2 3-2 2.1 0 4 1.7 4 5.1 0 6-7 10.4-7 10.4z"/>
         </svg>
 
-        <div class="celeb-title">The Wedding<br>is HERE!</div>
-        <div class="celeb-subtitle">Time to celebrate! 🎉</div>
+        <div class="celeb-title">The day is here</div>
+        <div class="celeb-subtitle">with love</div>
 
         <div class="event-info">
-          <div class="event-date">Hadar & Yehonatan</div>
-          <div class="event-location">4 September 2026</div>
+          <div class="event-date">Hadar &amp; Yehonatan</div>
+          <div class="event-location">04 . 09 . 2026 &middot; Mona Jerusalem</div>
         </div>
 
         <div class="button-group">
-          <button class="btn" onclick="openSheet()">
-            <span class="btn-icon">📅</span>
-            <span>Add to Calendar</span>
-          </button>
-
-          <a class="btn" href="https://ul.waze.com/ul?q=Mona%20Jerusalem&navigate=yes" target="_blank" rel="noopener">
-            <span class="btn-icon">🗺️</span>
-            <span>Navigate with Waze</span>
-          </a>
-
-          <a class="btn" href="https://open.spotify.com/playlist/3K7p8dvlss3klkHgZacXag?si=Ttohk8EtRuGqMfXL3Uy9BA&pi=2SG9bgXJRtGEJ" target="_blank" rel="noopener">
-            <span class="btn-icon">🎵</span>
-            <span>Wedding Playlist</span>
-          </a>
+          <button class="btn" onclick="openSheet()">Add to Calendar</button>
+          <a class="btn" href="https://ul.waze.com/ul?q=Mona%20Jerusalem&navigate=yes" target="_blank" rel="noopener">Navigate</a>
+          <a class="btn" href="https://open.spotify.com/playlist/3K7p8dvlss3klkHgZacXag?si=Ttohk8EtRuGqMfXL3Uy9BA&pi=2SG9bgXJRtGEJ" target="_blank" rel="noopener">Playlist</a>
         </div>
       </div>
     </div>
@@ -361,18 +394,31 @@
   <div class="overlay" id="overlay" onclick="maybeClose(event)">
     <div class="sheet">
       <div class="handle"></div>
-      <p class="sheet-title">Add to Calendar</p>
+      <p class="sheet-title">add to calendar</p>
 
       <div class="opt" onclick="downloadICS()">
-        <div class="opt-icon">🗓️</div>
+        <div class="opt-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="5" width="18" height="16" rx="2"/>
+            <path d="M3 10h18"/>
+            <path d="M8 3v4M16 3v4"/>
+          </svg>
+        </div>
         <div class="opt-text">
           <span class="opt-name">Apple Calendar</span>
-          <span class="opt-desc">Download .ics file for iPhone</span>
+          <span class="opt-desc">Download .ics file</span>
         </div>
       </div>
 
       <a class="opt" id="gcal-link" href="#" target="_blank" rel="noopener">
-        <div class="opt-icon">📅</div>
+        <div class="opt-icon">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="5" width="18" height="16" rx="2"/>
+            <path d="M3 10h18"/>
+            <path d="M8 3v4M16 3v4"/>
+            <path d="M8 14h2M14 14h2M8 18h2"/>
+          </svg>
+        </div>
         <div class="opt-text">
           <span class="opt-name">Google Calendar</span>
           <span class="opt-desc">Opens in browser</span>
@@ -453,7 +499,7 @@
       var lines = [
         'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Wedding//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH',
         'BEGIN:VEVENT','UID:hadar-yehonatan@2026','DTSTART:20260904T150000','DTEND:20260904T220000',
-        'SUMMARY:Hadar & Yehonatan\'s Wedding 💕','DESCRIPTION:Mona Jerusalem','LOCATION:Mona Jerusalem',
+        'SUMMARY:Hadar & Yehonatan\'s Wedding','DESCRIPTION:Mona Jerusalem','LOCATION:Mona Jerusalem',
         'STATUS:CONFIRMED','TRANSP:OPAQUE',
         'BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY','DESCRIPTION:Wedding tomorrow!','END:VALARM',
         'END:VEVENT','END:VCALENDAR'
