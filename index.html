@@ -488,6 +488,8 @@
       <p class="sheet-title">הרשמה להסעה</p>
 
       <form id="bus-form" onsubmit="submitBusForm(event)">
+        <input type="text" name="_honey" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"/>
+
         <div class="form-group">
           <label class="form-label" for="bus-name">שם מלא</label>
           <input class="form-input" id="bus-name" name="name" type="text" autocomplete="name" required/>
@@ -542,9 +544,9 @@
     }
 
     // ─── Shuttle signup form ───
-    // Replace this with your Formspree endpoint after signing up at https://formspree.io
-    // (Create a new form, copy the URL it gives you — looks like https://formspree.io/f/xxxxxxxx)
-    var FORMSPREE_URL = 'https://formspree.io/f/REPLACE_WITH_YOUR_FORM_ID';
+    // Handled by Cloudflare Pages Function at /bus (functions/bus.js)
+    // Inserts into D1 binding `DB`, table `bus_signups`.
+    var BUS_ENDPOINT = '/bus';
 
     function openBus() {
       var status = document.getElementById('bus-status');
@@ -570,32 +572,26 @@
       var submit = document.getElementById('bus-submit');
       var status = document.getElementById('bus-status');
 
-      if (FORMSPREE_URL.indexOf('REPLACE_WITH_YOUR_FORM_ID') !== -1) {
-        status.className = 'form-status error';
-        status.textContent = 'הטופס עדיין לא מחובר. אנא צרו קשר ישירות.';
-        return;
-      }
-
       submit.disabled = true;
       submit.textContent = 'שולח...';
       status.className = 'form-status';
       status.textContent = '';
 
       var data = new FormData(form);
-      fetch(FORMSPREE_URL, {
+      fetch(BUS_ENDPOINT, {
         method: 'POST',
         body: data,
         headers: { 'Accept': 'application/json' }
       }).then(function(resp) {
-        if (resp.ok) {
+        return resp.json().then(function(body) { return { ok: resp.ok, body: body }; });
+      }).then(function(r) {
+        if (r.ok && r.body && r.body.ok) {
           status.className = 'form-status success';
           status.textContent = 'תודה! נחזור אליכם עם פרטי ההסעה.';
           form.reset();
           submit.textContent = 'נשלח ✓';
         } else {
-          return resp.json().then(function(err) {
-            throw new Error((err && err.error) || 'שליחה נכשלה');
-          });
+          throw new Error((r.body && r.body.error) || 'שליחה נכשלה');
         }
       }).catch(function() {
         status.className = 'form-status error';
