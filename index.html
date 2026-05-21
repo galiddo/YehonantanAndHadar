@@ -91,17 +91,12 @@
       color: var(--text);
     }
 
-    .heart-icon {
-      width: 32px;
-      height: 32px;
-      color: var(--gold);
-      animation: heartbeat 2.6s ease-in-out infinite;
-    }
-
-    @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      15%, 35% { transform: scale(1.12); }
-      25%, 45% { transform: scale(0.96); }
+    .venue-img {
+      width: 100%;
+      max-width: 240px;
+      height: auto;
+      display: block;
+      mix-blend-mode: multiply;
     }
 
     .divider {
@@ -306,9 +301,7 @@
 
     <div class="header">
       <div class="names">הדר ויהונתן מתחתנים</div>
-      <svg class="heart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-        <path d="M12 20.5s-7-4.4-7-10.4C5 6.7 6.9 5 9 5c1.4 0 2.4 0.9 3 2 0.6-1.1 1.6-2 3-2 2.1 0 4 1.7 4 5.1 0 6-7 10.4-7 10.4z"/>
-      </svg>
+      <img class="venue-img" src="assets/venue.jpg" alt="מונא ירושלים"/>
       <div class="divider"></div>
     </div>
 

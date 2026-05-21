@@ -2,6 +2,6 @@
   "name": "yehonantan-and-hadar",
   "private": true,
   "scripts": {
-    "build": "mkdir -p dist/fonts && cp index.html dist/ && cp fonts/*.woff fonts/*.ttf dist/fonts/"
+    "build": "mkdir -p dist/fonts dist/assets && cp index.html dist/ && cp fonts/*.woff fonts/*.ttf dist/fonts/ && cp assets/* dist/assets/"
   }
 }
