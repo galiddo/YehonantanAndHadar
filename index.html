@@ -423,58 +423,76 @@
       border: 1px solid #f5b7b1;
     }
 
-    /* Compact mobile layout — fit everything in one viewport */
+    /* Mobile: stretch content to fill the whole viewport */
     @media (max-width: 480px) {
       body {
-        padding: max(env(safe-area-inset-top), 16px) 22px max(env(safe-area-inset-bottom), 16px);
+        padding: max(env(safe-area-inset-top), 18px) 22px max(env(safe-area-inset-bottom), 18px);
+        justify-content: flex-start;
       }
-      main { gap: 14px; }
-      .header { gap: 8px; }
+      main {
+        flex: 1;
+        gap: 0;
+        justify-content: space-between;
+        max-width: none;
+      }
+      .header {
+        gap: 14px;
+        flex-shrink: 0;
+      }
       .names {
-        font-size: clamp(1.6rem, 7.4vw, 2.1rem);
+        font-size: clamp(1.8rem, 8vw, 2.4rem);
         line-height: 1.15;
       }
-      .venue-img { max-width: 190px; }
+      .venue-img {
+        max-width: min(260px, 80vw);
+        max-height: 32vh;
+        width: auto;
+      }
       .divider { display: none; }
-      .event-info { gap: 3px; }
+      .event-info {
+        gap: 6px;
+        flex-shrink: 0;
+      }
       .event-date {
-        font-size: clamp(1.3rem, 5.8vw, 1.7rem);
+        font-size: clamp(1.5rem, 6.5vw, 1.9rem);
         letter-spacing: 0.03em;
       }
-      .event-location { font-size: 0.92rem; }
+      .event-location { font-size: 1rem; }
       .event-address {
-        font-size: 0.8rem;
+        font-size: 0.86rem;
         margin-top: 0;
       }
-      .actions { gap: 10px; }
-      .btn-primary {
-        padding: 13px 22px;
-        font-size: 1rem;
+      .actions {
+        gap: 12px;
+        flex-shrink: 0;
       }
-      .btn-primary-icon { width: 18px; height: 18px; }
+      .btn-primary {
+        padding: 16px 22px;
+        font-size: 1.1rem;
+      }
+      .btn-primary-icon { width: 22px; height: 22px; }
       .button-grid { gap: 10px; }
       .btn-tile {
         aspect-ratio: auto;
-        padding: 12px 8px;
-        gap: 6px;
-        min-height: 86px;
+        padding: 16px 10px;
+        gap: 10px;
+        min-height: 100px;
       }
-      .btn-tile-icon { width: 28px; height: 28px; }
+      .btn-tile-icon { width: 34px; height: 34px; }
       .btn-tile-label {
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         line-height: 1.15;
       }
     }
 
-    /* Even tighter for very short viewports */
+    /* Smaller / shorter phones */
     @media (max-width: 480px) and (max-height: 720px) {
-      main { gap: 10px; }
-      .header { gap: 6px; }
-      .names { font-size: clamp(1.4rem, 6.6vw, 1.9rem); }
-      .venue-img { max-width: 160px; }
-      .btn-tile { min-height: 78px; padding: 10px 8px; }
-      .btn-tile-icon { width: 24px; height: 24px; }
-      .btn-tile-label { font-size: 0.76rem; }
+      .names { font-size: clamp(1.5rem, 7vw, 2rem); }
+      .venue-img { max-height: 26vh; }
+      .btn-tile { min-height: 84px; padding: 12px 8px; }
+      .btn-tile-icon { width: 28px; height: 28px; }
+      .btn-tile-label { font-size: 0.82rem; }
+      .btn-primary { padding: 13px 22px; font-size: 1rem; }
     }
 
   </style>
