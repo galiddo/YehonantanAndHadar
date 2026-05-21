@@ -899,6 +899,25 @@
       setTimeout(closeSheet, 300);
     }
 
+    // ─── Personalized URL slug → prefill guest name ───
+    (function() {
+      var slug = location.pathname.replace(/^\/+|\/+$/g, '');
+      if (!slug) return;
+      var name = '';
+      try {
+        var b64 = slug.replace(/-/g, '+').replace(/_/g, '/');
+        var pad = b64.length % 4;
+        if (pad) b64 += '===='.slice(0, 4 - pad);
+        var bin = atob(b64);
+        name = decodeURIComponent(escape(bin));
+      } catch (e) { return; }
+      if (!name) return;
+      var rsvp = document.getElementById('rsvp-name');
+      var bus = document.getElementById('bus-name');
+      if (rsvp) rsvp.value = name;
+      if (bus) bus.value = name;
+    })();
+
     // ─── Live text color picker ───
     (function() {
       var r = document.getElementById('cp-r');
