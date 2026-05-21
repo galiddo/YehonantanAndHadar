@@ -947,7 +947,7 @@
       }
 
       var slug = location.pathname.replace(/^\/+|\/+$/g, '');
-      if (!slug) { block(); return; }
+      if (!slug) return; // empty slug → allow, no prefill, fields editable
 
       var name = '';
       try {
