@@ -19,8 +19,8 @@
 
     :root {
       --bg:        #faf6f1;
-      --gold:      rgba(102, 151, 189, 0.78);
-      --gold-soft: #b0c8db;
+      --gold:      rgba(89, 135, 171, 0.9);
+      --gold-soft: #aac1d2;
       --text:      #2a2a2a;
       --muted:     #7a7066;
     }
@@ -141,8 +141,8 @@
       gap: 12px;
     }
     .btn-primary:hover, .btn-primary:active {
-      background: #476a84;
-      border-color: #476a84;
+      background: #3e5f78;
+      border-color: #3e5f78;
     }
     .btn-primary-icon {
       width: 22px;
@@ -351,7 +351,7 @@
       appearance: none;
       -webkit-appearance: none;
       -moz-appearance: none;
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236697bd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235987ab' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
       background-repeat: no-repeat;
       background-position: left 14px center;
       background-size: 12px;
@@ -369,7 +369,7 @@
     .form-info {
       margin-bottom: 14px;
       padding: 12px 14px;
-      background: rgba(102, 151, 189, 0.16);
+      background: rgba(89, 135, 171, 0.16);
       border: 1px solid var(--gold-soft);
       border-radius: 4px;
       font-family: 'Felix007', system-ui, sans-serif;
@@ -411,7 +411,7 @@
     }
     .form-status.success {
       display: block;
-      background: rgba(102, 151, 189, 0.16);
+      background: rgba(89, 135, 171, 0.16);
       color: var(--gold);
       border: 1px solid var(--gold-soft);
     }
@@ -422,39 +422,6 @@
       border: 1px solid #f5b7b1;
     }
 
-    .color-picker {
-      width: 100%;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-top: 32px;
-      padding-top: 18px;
-      border-top: 1px solid var(--gold-soft);
-    }
-
-    .color-picker label {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      font-family: 'Felix007', system-ui, sans-serif;
-      font-size: 0.82rem;
-      color: var(--muted);
-    }
-
-    .color-picker input {
-      width: 100%;
-      padding: 8px;
-      background: #fff;
-      border: 1px solid var(--gold-soft);
-      border-radius: 4px;
-      font-family: 'Felix007', system-ui, sans-serif;
-      font-size: 0.95rem;
-      color: var(--text);
-      text-align: center;
-      outline: none;
-    }
-    .color-picker input:focus { border-color: var(--gold); }
   </style>
 </head>
 
@@ -521,13 +488,6 @@
         <span class="btn-tile-label">הרשמה להסעה</span>
       </button>
     </div>
-    </div>
-
-    <div class="color-picker" dir="ltr" aria-label="accent color picker">
-      <label>R<input id="cp-r" type="number" min="0" max="255" value="102"/></label>
-      <label>G<input id="cp-g" type="number" min="0" max="255" value="151"/></label>
-      <label>B<input id="cp-b" type="number" min="0" max="255" value="189"/></label>
-      <label>A<input id="cp-a" type="number" min="0" max="1" step="0.01" value="0.78"/></label>
     </div>
 
   </main>
@@ -828,26 +788,6 @@
       setTimeout(closeSheet, 300);
     }
 
-    // ─── Live accent color picker ───
-    (function() {
-      var r = document.getElementById('cp-r');
-      var g = document.getElementById('cp-g');
-      var b = document.getElementById('cp-b');
-      var a = document.getElementById('cp-a');
-      if (!r) return;
-      function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
-      function update() {
-        var rv = clamp(parseInt(r.value, 10) || 0, 0, 255);
-        var gv = clamp(parseInt(g.value, 10) || 0, 0, 255);
-        var bv = clamp(parseInt(b.value, 10) || 0, 0, 255);
-        var av = clamp(parseFloat(a.value) || 0, 0, 1);
-        document.documentElement.style.setProperty('--gold', 'rgba(' + rv + ',' + gv + ',' + bv + ',' + av + ')');
-      }
-      [r, g, b, a].forEach(function(el) {
-        el.addEventListener('input', update);
-        el.addEventListener('change', update);
-      });
-    })();
   </script>
 </body>
 </html>
