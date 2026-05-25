@@ -9,18 +9,24 @@
 
   <style>
     @font-face {
-      font-family: 'Felix007';
-      font-weight: normal;
+      font-family: 'Amatic SC';
+      font-weight: 400;
       font-style: normal;
       font-display: swap;
-      src: url('fonts/felix007-medium-webfont.woff') format('woff'),
-           url('fonts/felix007-medium-webfont.ttf') format('truetype');
+      src: url('fonts/AmaticSC-Regular.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'Amatic SC';
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+      src: url('fonts/AmaticSC-Bold.ttf') format('truetype');
     }
 
     :root {
       --bg:        #faf6f1;
-      --gold:      rgba(25, 58, 127, 0.9);
-      --gold-soft: #b8c4dc;
+      --gold:      #193a7f;
+      --gold-soft: #193a7f;
       --text:      #2a2a2a;
       --muted:     #7a7066;
     }
@@ -30,7 +36,7 @@
     body {
       background: var(--bg);
       color: var(--text);
-      font-family: 'Felix007', system-ui, sans-serif;
+      font-family: 'Amatic SC', system-ui, sans-serif;
       font-weight: 300;
       min-height: 100vh;
       min-height: 100dvh;
@@ -89,16 +95,16 @@
     }
 
     .event-location {
-      font-family: 'Felix007', system-ui, sans-serif;
-      font-weight: 300;
-      font-size: 1rem;
+      font-family: 'Amatic SC', system-ui, sans-serif;
+      font-weight: 700;
+      font-size: 1.5rem;
       color: var(--text);
     }
 
     .event-address {
-      font-family: 'Felix007', system-ui, sans-serif;
+      font-family: 'Amatic SC', system-ui, sans-serif;
       font-weight: 300;
-      font-size: 0.88rem;
+      font-size: 1.15rem;
       color: var(--muted);
       margin-top: -2px;
     }
@@ -118,7 +124,7 @@
       border: 1px solid var(--gold);
       border-radius: 4px;
       padding: 18px 22px;
-      font-family: 'Felix007', system-ui, sans-serif;
+      font-family: 'Amatic SC', system-ui, sans-serif;
       font-weight: 700;
       font-size: 1.1rem;
       cursor: pointer;
@@ -131,8 +137,8 @@
       gap: 12px;
     }
     .btn-primary:hover, .btn-primary:active {
-      background: #11285a;
-      border-color: #11285a;
+      background: var(--gold);
+      border-color: var(--gold);
     }
     .btn-primary-icon {
       width: 22px;
@@ -153,7 +159,7 @@
       border: 1px solid var(--gold);
       border-radius: 4px;
       padding: 18px 12px;
-      font-family: 'Felix007', system-ui, sans-serif;
+      font-family: 'Amatic SC', system-ui, sans-serif;
       cursor: pointer;
       transition: background 0.2s ease, color 0.2s ease;
       -webkit-tap-highlight-color: transparent;
@@ -219,7 +225,7 @@
     }
 
     .sheet-title {
-      font-family: 'Felix007', system-ui, sans-serif;
+      font-family: 'Amatic SC', system-ui, sans-serif;
       font-weight: 700;
       font-size: 1rem;
       letter-spacing: 0.03em;
@@ -244,9 +250,11 @@
       transition: background 0.15s, border-color 0.15s;
     }
     .opt:hover, .opt:active {
-      background: #e7ecf5;
+      background: var(--gold);
       border-color: var(--gold);
+      color: #fff;
     }
+    .opt:hover .opt-icon, .opt:active .opt-icon { color: #fff; }
 
     .opt-icon {
       width: 38px;
@@ -264,13 +272,13 @@
     }
 
     .opt-name {
-      font-family: 'Felix007', system-ui, sans-serif;
+      font-family: 'Amatic SC', system-ui, sans-serif;
       font-weight: 700;
       font-size: 1.05rem;
     }
 
     .opt-desc {
-      font-family: 'Felix007', system-ui, sans-serif;
+      font-family: 'Amatic SC', system-ui, sans-serif;
       font-weight: 300;
       font-size: 0.9rem;
       color: var(--muted);
@@ -284,7 +292,7 @@
       border: 1px solid var(--gold);
       border-radius: 2px;
       color: var(--gold);
-      font-family: 'Felix007', system-ui, sans-serif;
+      font-family: 'Amatic SC', system-ui, sans-serif;
       font-weight: 700;
       font-size: 1rem;
       cursor: pointer;
@@ -305,7 +313,7 @@
     }
 
     .form-label {
-      font-family: 'Felix007', system-ui, sans-serif;
+      font-family: 'Amatic SC', system-ui, sans-serif;
       font-weight: 700;
       font-size: 0.92rem;
       color: var(--text);
@@ -318,7 +326,7 @@
       background: #fff;
       border: 1px solid var(--gold-soft);
       border-radius: 4px;
-      font-family: 'Felix007', system-ui, sans-serif;
+      font-family: 'Amatic SC', system-ui, sans-serif;
       font-weight: 300;
       font-size: 1rem;
       color: var(--text);
@@ -359,12 +367,12 @@
     .form-info {
       margin-bottom: 14px;
       padding: 12px 14px;
-      background: rgba(25, 58, 127, 0.16);
-      border: 1px solid var(--gold-soft);
+      background: var(--gold);
+      border: 1px solid var(--gold);
       border-radius: 4px;
-      font-family: 'Felix007', system-ui, sans-serif;
+      font-family: 'Amatic SC', system-ui, sans-serif;
       font-size: 0.95rem;
-      color: var(--text);
+      color: #fff;
       text-align: center;
       line-height: 1.4;
     }
@@ -377,7 +385,7 @@
       color: #fff;
       border: 1px solid var(--gold);
       border-radius: 2px;
-      font-family: 'Felix007', system-ui, sans-serif;
+      font-family: 'Amatic SC', system-ui, sans-serif;
       font-weight: 700;
       font-size: 1rem;
       cursor: pointer;
@@ -393,7 +401,7 @@
       margin-top: 10px;
       padding: 12px;
       border-radius: 4px;
-      font-family: 'Felix007', system-ui, sans-serif;
+      font-family: 'Amatic SC', system-ui, sans-serif;
       font-weight: 300;
       font-size: 0.95rem;
       text-align: center;
@@ -401,9 +409,9 @@
     }
     .form-status.success {
       display: block;
-      background: rgba(25, 58, 127, 0.16);
-      color: var(--gold);
-      border: 1px solid var(--gold-soft);
+      background: var(--gold);
+      color: #fff;
+      border: 1px solid var(--gold);
     }
     .form-status.error {
       display: block;
@@ -431,14 +439,14 @@
     }
     .blocked.show { display: flex; }
     .blocked-title {
-      font-family: 'Felix007', system-ui, sans-serif;
+      font-family: 'Amatic SC', system-ui, sans-serif;
       font-weight: 700;
       font-size: clamp(1.8rem, 7.5vw, 2.3rem);
       color: var(--text);
       line-height: 1.2;
     }
     .blocked-text {
-      font-family: 'Felix007', system-ui, sans-serif;
+      font-family: 'Amatic SC', system-ui, sans-serif;
       font-size: 1rem;
       color: var(--muted);
       max-width: 340px;
@@ -465,9 +473,9 @@
         gap: 6px;
         flex-shrink: 0;
       }
-      .event-location { font-size: 1.15rem; }
+      .event-location { font-size: 1.7rem; }
       .event-address {
-        font-size: 1rem;
+        font-size: 1.3rem;
         margin-top: 0;
       }
       .actions {
@@ -496,8 +504,8 @@
     /* Smaller / shorter phones */
     @media (max-width: 480px) and (max-height: 720px) {
       .title-img { max-width: min(280px, 84vw); }
-      .event-location { font-size: 1.05rem; }
-      .event-address { font-size: 0.92rem; }
+      .event-location { font-size: 1.55rem; }
+      .event-address { font-size: 1.2rem; }
       .btn-tile { min-height: 90px; padding: 14px 8px; }
       .btn-tile-icon { width: 30px; height: 30px; }
       .btn-tile-label { font-size: 0.92rem; }
