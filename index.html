@@ -901,6 +901,68 @@
       });
     })();
 
+    // ─── Easter egg: 15 taps on the title image → fullscreen takeover ───
+    (function() {
+      var img = document.querySelector('.title-img');
+      if (!img) return;
+      var THRESHOLD = 15;
+      var RESET_MS = 2000;
+      var HOLD_MS = 3000;
+      var EASE_MS = 500;
+      var count = 0, lastTap = 0, animating = false;
+
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', function() {
+        if (animating) return;
+        var now = Date.now();
+        if (now - lastTap > RESET_MS) count = 0;
+        lastTap = now;
+        count++;
+        if (count >= THRESHOLD) { count = 0; runEasterEgg(); }
+      });
+
+      function runEasterEgg() {
+        animating = true;
+        var rect = img.getBoundingClientRect();
+        var clone = img.cloneNode(true);
+        var ease = 'cubic-bezier(0.22, 1, 0.36, 1)';
+        Object.assign(clone.style, {
+          position: 'fixed',
+          left: rect.left + 'px',
+          top: rect.top + 'px',
+          width: rect.width + 'px',
+          height: rect.height + 'px',
+          margin: '0',
+          maxWidth: 'none',
+          objectFit: 'contain',
+          background: '#193a7f',
+          borderRadius: '6px',
+          zIndex: '9999',
+          transition: 'left ' + EASE_MS + 'ms ' + ease + ', top ' + EASE_MS + 'ms ' + ease + ', width ' + EASE_MS + 'ms ' + ease + ', height ' + EASE_MS + 'ms ' + ease + ', border-radius ' + EASE_MS + 'ms ease',
+        });
+        document.body.appendChild(clone);
+        clone.getBoundingClientRect(); // flush layout
+        requestAnimationFrame(function() {
+          clone.style.left = '0';
+          clone.style.top = '0';
+          clone.style.width = '100vw';
+          clone.style.height = '100vh';
+          clone.style.borderRadius = '0';
+        });
+        setTimeout(function() {
+          clone.style.left = rect.left + 'px';
+          clone.style.top = rect.top + 'px';
+          clone.style.width = rect.width + 'px';
+          clone.style.height = rect.height + 'px';
+          clone.style.borderRadius = '6px';
+          setTimeout(function() {
+            clone.remove();
+            animating = false;
+          }, EASE_MS);
+        }, EASE_MS + HOLD_MS);
+      }
+    })();
+
   </script>
 </body>
 </html>
