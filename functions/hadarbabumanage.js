@@ -148,7 +148,8 @@ async function renderDashboard(env, key) {
     .panel-head h2 { margin: 0; font-size: 1.15rem; color: #193a7f; }
     .export-btn { display: inline-block; padding: 8px 14px; background: #193a7f; color: #fff; text-decoration: none; border-radius: 4px; font-size: 0.95rem; }
     .export-btn:hover { background: #11285a; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+    table { width: 100%; min-width: 480px; border-collapse: collapse; font-size: 0.95rem; }
     th, td { border: 1px solid #e0d8ca; padding: 8px 10px; text-align: right; vertical-align: top; }
     th { background: #eee9e0; color: #193a7f; font-weight: 700; }
     tr:nth-child(even) td { background: #faf6f1; }
@@ -170,10 +171,12 @@ async function renderDashboard(env, key) {
     .error-banner.show { display: block; }
     @media (max-width: 600px) {
       body { padding: 12px; }
-      table { font-size: 0.85rem; }
+      .panel { padding: 10px; }
+      table { font-size: 0.85rem; min-width: 560px; }
       th, td { padding: 6px; }
       .stat { min-width: 110px; }
-      td.actions button { padding: 4px 6px; font-size: 0.8rem; }
+      td.actions { white-space: normal; min-width: 92px; }
+      td.actions button { padding: 4px 6px; font-size: 0.8rem; margin: 2px; display: inline-block; }
     }
   </style>
 </head>
@@ -199,10 +202,12 @@ async function renderDashboard(env, key) {
       <h2>אישורי הגעה</h2>
       <a class="export-btn" href="?key=${kq}&amp;export=rsvps">⬇ ייצוא ל-Excel (CSV)</a>
     </div>
-    <table>
-      <thead><tr><th>שם</th><th>אורחים</th><th>תאריך הרשמה</th><th>פעולות</th></tr></thead>
-      <tbody>${rsvpRows}</tbody>
-    </table>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>שם</th><th>אורחים</th><th>תאריך הרשמה</th><th>פעולות</th></tr></thead>
+        <tbody>${rsvpRows}</tbody>
+      </table>
+    </div>
   </div>
 
   <div class="panel" id="bus">
@@ -210,10 +215,12 @@ async function renderDashboard(env, key) {
       <h2>הרשמות להסעה</h2>
       <a class="export-btn" href="?key=${kq}&amp;export=bus">⬇ ייצוא ל-Excel (CSV)</a>
     </div>
-    <table>
-      <thead><tr><th>שם</th><th>טלפון</th><th>נוסעים</th><th>נקודת איסוף</th><th>הערות</th><th>תאריך הרשמה</th><th>פעולות</th></tr></thead>
-      <tbody>${busRows}</tbody>
-    </table>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>שם</th><th>טלפון</th><th>נוסעים</th><th>נקודת איסוף</th><th>הערות</th><th>תאריך הרשמה</th><th>פעולות</th></tr></thead>
+        <tbody>${busRows}</tbody>
+      </table>
+    </div>
   </div>
 
   <script>
