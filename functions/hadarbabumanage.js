@@ -2,31 +2,85 @@
 // Auth: ?key=<ADMIN_KEY> matching the ADMIN_KEY env var (set in
 // Cloudflare Pages → Settings → Environment Variables).
 // Routes:
-//   GET /hadarbabumanage?key=X                → tabbed HTML dashboard
-//   GET /hadarbabumanage?key=X&export=rsvps   → CSV of all RSVPs
-//   GET /hadarbabumanage?key=X&export=bus     → CSV of all bus signups
+//   GET  /hadarbabumanage?key=X                → tabbed HTML dashboard
+//   GET  /hadarbabumanage?key=X&export=rsvps   → CSV of all RSVPs
+//   GET  /hadarbabumanage?key=X&export=bus     → CSV of all bus signups
+//   POST /hadarbabumanage  (form fields)       → mutate (update/delete)
+//        body: action=update|delete, table=rsvps|bus_signups, id=N, key=X, <fields...>
 
 export async function onRequestGet(context) {
   const { request, env } = context;
   const url = new URL(request.url);
   const key = url.searchParams.get('key') || '';
-  const expected = env.ADMIN_KEY || '';
+  if (!authorize(env, key)) return forbidden(env);
 
-  if (!expected) {
+  const exportType = url.searchParams.get('export');
+  if (exportType === 'rsvps') return exportRsvps(env);
+  if (exportType === 'bus') return exportBus(env);
+  return renderDashboard(env, key);
+}
+
+export async function onRequestPost(context) {
+  const { request, env } = context;
+  const fd = await request.formData();
+  const key = String(fd.get('key') || '');
+  if (!authorize(env, key)) return new Response('Forbidden', { status: 403 });
+
+  const action = fd.get('action');
+  const table = fd.get('table');
+  const id = parseInt(fd.get('id'), 10);
+
+  if (!Number.isInteger(id) || id < 1) return json({ error: 'bad id' }, 400);
+  if (table !== 'rsvps' && table !== 'bus_signups') return json({ error: 'bad table' }, 400);
+
+  try {
+    if (action === 'delete') {
+      const r = await env.DB.prepare(`DELETE FROM ${table} WHERE id = ?`).bind(id).run();
+      return json({ ok: true, changes: r.meta?.changes ?? 0 });
+    }
+    if (action === 'update') {
+      if (table === 'rsvps') {
+        const name = String(fd.get('name') || '').trim().slice(0, 100);
+        const guests = parseInt(fd.get('guests'), 10);
+        if (!name || !Number.isInteger(guests) || guests < 0 || guests > 100) {
+          return json({ error: 'bad fields' }, 400);
+        }
+        await env.DB.prepare('UPDATE rsvps SET name = ?, guests = ? WHERE id = ?')
+          .bind(name, guests, id).run();
+      } else {
+        const name = String(fd.get('name') || '').trim().slice(0, 100);
+        const phone = String(fd.get('phone') || '').trim().slice(0, 30);
+        const passengers = parseInt(fd.get('passengers'), 10);
+        const pickup = String(fd.get('pickup') || '').trim().slice(0, 200);
+        const notes = String(fd.get('notes') || '').trim().slice(0, 500);
+        if (!name || !phone || !Number.isInteger(passengers) || passengers < 0 || passengers > 100) {
+          return json({ error: 'bad fields' }, 400);
+        }
+        await env.DB.prepare('UPDATE bus_signups SET name = ?, phone = ?, passengers = ?, pickup = ?, notes = ? WHERE id = ?')
+          .bind(name, phone, passengers, pickup, notes, id).run();
+      }
+      return json({ ok: true });
+    }
+  } catch (e) {
+    return json({ error: 'db error', detail: String(e) }, 500);
+  }
+  return json({ error: 'bad action' }, 400);
+}
+
+function authorize(env, key) {
+  const expected = env.ADMIN_KEY || '';
+  if (!expected) return false;
+  return safeEqual(key, expected);
+}
+
+function forbidden(env) {
+  if (!env.ADMIN_KEY) {
     return new Response(
       'ADMIN_KEY env var is not configured. Set it in Cloudflare Pages → Settings → Environment Variables.',
       { status: 503, headers: { 'content-type': 'text/plain; charset=utf-8' } }
     );
   }
-  if (!safeEqual(key, expected)) {
-    return new Response('Forbidden', { status: 403, headers: { 'content-type': 'text/plain' } });
-  }
-
-  const exportType = url.searchParams.get('export');
-  if (exportType === 'rsvps') return exportRsvps(env);
-  if (exportType === 'bus') return exportBus(env);
-
-  return renderDashboard(env, key);
+  return new Response('Forbidden', { status: 403, headers: { 'content-type': 'text/plain' } });
 }
 
 async function renderDashboard(env, key) {
@@ -41,18 +95,40 @@ async function renderDashboard(env, key) {
   const kq = encodeURIComponent(key);
 
   const rsvpRows = rs.length === 0
-    ? `<tr><td colspan="3" class="empty">אין אישורי הגעה עדיין</td></tr>`
-    : rs.map(r => `<tr><td>${esc(r.name)}</td><td>${r.guests}</td><td>${fmtDate(r.created_at)}</td></tr>`).join('');
+    ? `<tr><td colspan="4" class="empty">אין אישורי הגעה עדיין</td></tr>`
+    : rs.map(r => `
+      <tr data-table="rsvps" data-id="${r.id}">
+        <td class="cell" data-field="name">${esc(r.name)}</td>
+        <td class="cell num" data-field="guests">${r.guests}</td>
+        <td class="ts">${esc(fmtDate(r.created_at))}</td>
+        <td class="actions">
+          <button class="btn-edit">ערוך</button>
+          <button class="btn-del">מחק</button>
+        </td>
+      </tr>`).join('');
 
   const busRows = bs.length === 0
-    ? `<tr><td colspan="6" class="empty">אין הרשמות להסעה עדיין</td></tr>`
-    : bs.map(r => `<tr><td>${esc(r.name)}</td><td dir="ltr">${esc(r.phone)}</td><td>${r.passengers}</td><td>${esc(r.pickup || '')}</td><td>${esc(r.notes || '')}</td><td>${fmtDate(r.created_at)}</td></tr>`).join('');
+    ? `<tr><td colspan="7" class="empty">אין הרשמות להסעה עדיין</td></tr>`
+    : bs.map(r => `
+      <tr data-table="bus_signups" data-id="${r.id}">
+        <td class="cell" data-field="name">${esc(r.name)}</td>
+        <td class="cell ltr" data-field="phone" dir="ltr">${esc(r.phone)}</td>
+        <td class="cell num" data-field="passengers">${r.passengers}</td>
+        <td class="cell" data-field="pickup">${esc(r.pickup || '')}</td>
+        <td class="cell" data-field="notes">${esc(r.notes || '')}</td>
+        <td class="ts">${esc(fmtDate(r.created_at))}</td>
+        <td class="actions">
+          <button class="btn-edit">ערוך</button>
+          <button class="btn-del">מחק</button>
+        </td>
+      </tr>`).join('');
 
   const html = `<!doctype html>
 <html lang="he" dir="rtl">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="robots" content="noindex, nofollow"/>
   <title>הרשמות - הדר ויהונתן</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
@@ -63,7 +139,7 @@ async function renderDashboard(env, key) {
     .stat { padding: 10px 16px; background: #fff; border: 1px solid #193a7f; border-radius: 4px; min-width: 140px; }
     .stat .lbl { font-size: 0.82rem; color: #666; }
     .stat .val { font-size: 1.4rem; color: #193a7f; font-weight: 700; }
-    .tabs { display: flex; gap: 6px; border-bottom: 2px solid #193a7f; margin-bottom: 0; }
+    .tabs { display: flex; gap: 6px; border-bottom: 2px solid #193a7f; }
     .tab-btn { padding: 10px 18px; background: #fff; border: 1px solid #193a7f; border-bottom: none; border-radius: 4px 4px 0 0; cursor: pointer; font-size: 1rem; font-family: inherit; color: #193a7f; }
     .tab-btn.active { background: #193a7f; color: #fff; }
     .panel { display: none; background: #fff; border: 1px solid #193a7f; border-top: none; padding: 16px; }
@@ -76,18 +152,35 @@ async function renderDashboard(env, key) {
     th, td { border: 1px solid #e0d8ca; padding: 8px 10px; text-align: right; vertical-align: top; }
     th { background: #eee9e0; color: #193a7f; font-weight: 700; }
     tr:nth-child(even) td { background: #faf6f1; }
+    tr.editing td { background: #fff8e1 !important; }
+    tr.busy { opacity: 0.5; pointer-events: none; }
+    td.ts { white-space: nowrap; color: #666; font-size: 0.85rem; }
+    td.ltr { direction: ltr; text-align: left; }
+    td.num { text-align: center; width: 80px; }
+    td.actions { white-space: nowrap; width: 1%; }
+    td.actions button { font-family: inherit; cursor: pointer; padding: 6px 10px; margin: 0 2px; border-radius: 3px; border: 1px solid #193a7f; background: #fff; color: #193a7f; font-size: 0.85rem; }
+    td.actions button:hover { background: #193a7f; color: #fff; }
+    td.actions .btn-del { border-color: #b03a2e; color: #b03a2e; }
+    td.actions .btn-del:hover { background: #b03a2e; color: #fff; }
+    td.actions .btn-save { border-color: #2e7d32; color: #2e7d32; }
+    td.actions .btn-save:hover { background: #2e7d32; color: #fff; }
+    td.cell input { width: 100%; padding: 6px 8px; border: 1px solid #193a7f; border-radius: 3px; font-family: inherit; font-size: 0.95rem; }
     .empty { text-align: center; color: #999; padding: 24px; }
+    .error-banner { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: #b03a2e; color: #fff; padding: 10px 18px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 100; display: none; }
+    .error-banner.show { display: block; }
     @media (max-width: 600px) {
       body { padding: 12px; }
       table { font-size: 0.85rem; }
       th, td { padding: 6px; }
       .stat { min-width: 110px; }
+      td.actions button { padding: 4px 6px; font-size: 0.8rem; }
     }
   </style>
 </head>
-<body>
+<body data-key="${esc(key)}">
   <h1>הרשמות</h1>
   <div class="subtitle">הדר ויהונתן · 04/09/2026</div>
+  <div id="err" class="error-banner"></div>
 
   <div class="stats">
     <div class="stat"><div class="lbl">אישורי הגעה</div><div class="val">${rs.length}</div></div>
@@ -107,7 +200,7 @@ async function renderDashboard(env, key) {
       <a class="export-btn" href="?key=${kq}&amp;export=rsvps">⬇ ייצוא ל-Excel (CSV)</a>
     </div>
     <table>
-      <thead><tr><th>שם</th><th>אורחים</th><th>תאריך הרשמה</th></tr></thead>
+      <thead><tr><th>שם</th><th>אורחים</th><th>תאריך הרשמה</th><th>פעולות</th></tr></thead>
       <tbody>${rsvpRows}</tbody>
     </table>
   </div>
@@ -118,12 +211,18 @@ async function renderDashboard(env, key) {
       <a class="export-btn" href="?key=${kq}&amp;export=bus">⬇ ייצוא ל-Excel (CSV)</a>
     </div>
     <table>
-      <thead><tr><th>שם</th><th>טלפון</th><th>נוסעים</th><th>נקודת איסוף</th><th>הערות</th><th>תאריך הרשמה</th></tr></thead>
+      <thead><tr><th>שם</th><th>טלפון</th><th>נוסעים</th><th>נקודת איסוף</th><th>הערות</th><th>תאריך הרשמה</th><th>פעולות</th></tr></thead>
       <tbody>${busRows}</tbody>
     </table>
   </div>
 
   <script>
+    const KEY = document.body.dataset.key;
+    const FIELD_TYPES = {
+      rsvps: { guests: 'number' },
+      bus_signups: { passengers: 'number', phone: 'tel' }
+    };
+
     document.querySelectorAll('.tab-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const target = btn.dataset.target;
@@ -131,6 +230,122 @@ async function renderDashboard(env, key) {
         document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === target));
       });
     });
+
+    function showError(msg) {
+      const el = document.getElementById('err');
+      el.textContent = msg;
+      el.classList.add('show');
+      setTimeout(() => el.classList.remove('show'), 4000);
+    }
+
+    async function postAction(payload) {
+      const fd = new FormData();
+      fd.set('key', KEY);
+      Object.entries(payload).forEach(([k, v]) => fd.set(k, String(v)));
+      const res = await fetch(location.pathname, { method: 'POST', body: fd });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || ('HTTP ' + res.status));
+      }
+      return data;
+    }
+
+    document.addEventListener('click', async (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      const tr = btn.closest('tr[data-table]');
+      if (!tr) return;
+      const table = tr.dataset.table;
+      const id = tr.dataset.id;
+
+      if (btn.classList.contains('btn-del')) {
+        if (!confirm('למחוק רשומה זו?')) return;
+        tr.classList.add('busy');
+        try {
+          await postAction({ action: 'delete', table, id });
+          tr.remove();
+        } catch (err) {
+          tr.classList.remove('busy');
+          showError('מחיקה נכשלה: ' + err.message);
+        }
+        return;
+      }
+
+      if (btn.classList.contains('btn-edit')) {
+        enterEditMode(tr, table);
+        return;
+      }
+
+      if (btn.classList.contains('btn-cancel')) {
+        exitEditMode(tr);
+        return;
+      }
+
+      if (btn.classList.contains('btn-save')) {
+        const payload = { action: 'update', table, id };
+        let valid = true;
+        tr.querySelectorAll('td.cell').forEach(td => {
+          const field = td.dataset.field;
+          const input = td.querySelector('input');
+          if (!input) return;
+          const val = input.value.trim();
+          if (FIELD_TYPES[table]?.[field] === 'number' && !/^[0-9]+$/.test(val)) valid = false;
+          if (field === 'name' && !val) valid = false;
+          if (field === 'phone' && !val) valid = false;
+          payload[field] = val;
+        });
+        if (!valid) { showError('שדה חובה ריק או לא חוקי'); return; }
+        tr.classList.add('busy');
+        try {
+          await postAction(payload);
+          // Reflect the saved values in the row
+          tr.querySelectorAll('td.cell').forEach(td => {
+            const input = td.querySelector('input');
+            if (input) td.textContent = input.value.trim();
+          });
+          exitEditMode(tr);
+        } catch (err) {
+          tr.classList.remove('busy');
+          showError('שמירה נכשלה: ' + err.message);
+        }
+      }
+    });
+
+    function enterEditMode(tr, table) {
+      // Stash original text and swap cells for inputs
+      tr.classList.add('editing');
+      tr.querySelectorAll('td.cell').forEach(td => {
+        const field = td.dataset.field;
+        const orig = td.textContent;
+        td.dataset.orig = orig;
+        const type = FIELD_TYPES[table]?.[field] || 'text';
+        const input = document.createElement('input');
+        input.type = type;
+        input.value = orig;
+        if (type === 'number') { input.min = '0'; input.max = '100'; }
+        td.textContent = '';
+        td.appendChild(input);
+      });
+      // Swap action buttons
+      const actions = tr.querySelector('td.actions');
+      actions.innerHTML = '<button class="btn-save">שמור</button><button class="btn-cancel">בטל</button>';
+      const first = tr.querySelector('td.cell input');
+      if (first) first.focus();
+    }
+
+    function exitEditMode(tr) {
+      tr.classList.remove('editing', 'busy');
+      tr.querySelectorAll('td.cell').forEach(td => {
+        if (td.dataset.orig !== undefined) {
+          // textContent may already be the saved value if save succeeded — only restore if still has input
+          const input = td.querySelector('input');
+          if (input) td.textContent = td.dataset.orig;
+          delete td.dataset.orig;
+        }
+      });
+      const actions = tr.querySelector('td.actions');
+      actions.innerHTML = '<button class="btn-edit">ערוך</button><button class="btn-del">מחק</button>';
+    }
   </script>
 </body>
 </html>`;
@@ -195,7 +410,6 @@ function todayStamp() {
 
 function fmtDate(s) {
   if (!s) return '';
-  // D1 stores datetime('now') as 'YYYY-MM-DD HH:MM:SS' (UTC)
   return s.replace('T', ' ').slice(0, 16);
 }
 
@@ -214,4 +428,11 @@ function safeEqual(a, b) {
   let diff = 0;
   for (let i = 0; i < ae.length; i++) diff |= ae[i] ^ be[i];
   return diff === 0;
+}
+
+function json(body, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'content-type': 'application/json; charset=utf-8' }
+  });
 }
