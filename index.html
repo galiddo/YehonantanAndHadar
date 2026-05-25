@@ -517,14 +517,42 @@
     .color-controls {
       width: 100%;
       margin-top: 22px;
-      padding: 16px;
+      padding: 0;
       background: #fff;
       border: 1px solid #d8d2c5;
       border-radius: 8px;
+      overflow: hidden;
+    }
+    .cc-tabs {
       display: flex;
+      background: #f5efe5;
+      border-bottom: 1px solid #d8d2c5;
+    }
+    .cc-tab {
+      flex: 1;
+      padding: 12px 14px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-family: 'Amatic SC', system-ui, sans-serif;
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: var(--muted);
+      border-bottom: 3px solid transparent;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .cc-tab.active {
+      background: #fff;
+      color: var(--gold);
+      border-bottom-color: var(--gold);
+    }
+    .cc-panel {
+      display: none;
+      padding: 16px;
       flex-direction: column;
       gap: 14px;
     }
+    .cc-panel.active { display: flex; }
     .cc-preview {
       position: relative;
       display: block;
@@ -711,28 +739,60 @@
     </div>
 
     <div class="color-controls" aria-label="בחירת צבע">
-      <label class="cc-preview" title="בחרו צבע">
-        <span class="cc-preview-hex" id="cc-hex">#193a7f</span>
-        <input type="color" id="cc-color" value="#193a7f"/>
-      </label>
-      <div class="cc-sliders" dir="ltr">
-        <div class="cc-row">
-          <span class="cc-label">R</span>
-          <input type="range" class="cc-range cc-range-r" id="cc-r" min="0" max="255" value="25"/>
-          <input type="number" class="cc-num" id="cc-r-val" min="0" max="255" value="25"/>
-        </div>
-        <div class="cc-row">
-          <span class="cc-label">G</span>
-          <input type="range" class="cc-range cc-range-g" id="cc-g" min="0" max="255" value="58"/>
-          <input type="number" class="cc-num" id="cc-g-val" min="0" max="255" value="58"/>
-        </div>
-        <div class="cc-row">
-          <span class="cc-label">B</span>
-          <input type="range" class="cc-range cc-range-b" id="cc-b" min="0" max="255" value="127"/>
-          <input type="number" class="cc-num" id="cc-b-val" min="0" max="255" value="127"/>
-        </div>
+      <div class="cc-tabs" role="tablist">
+        <button type="button" class="cc-tab active" data-target="gold" role="tab" aria-selected="true">צבע</button>
+        <button type="button" class="cc-tab" data-target="bg" role="tab" aria-selected="false">רקע</button>
       </div>
-      <button type="button" class="cc-reset" id="cc-reset">איפוס</button>
+
+      <div class="cc-panel active" data-panel="gold">
+        <label class="cc-preview" title="בחרו צבע">
+          <span class="cc-preview-hex" id="ccg-hex">#193a7f</span>
+          <input type="color" id="ccg-color" value="#193a7f"/>
+        </label>
+        <div class="cc-sliders" dir="ltr">
+          <div class="cc-row">
+            <span class="cc-label">R</span>
+            <input type="range" class="cc-range" id="ccg-r" min="0" max="255" value="25"/>
+            <input type="number" class="cc-num" id="ccg-r-val" min="0" max="255" value="25"/>
+          </div>
+          <div class="cc-row">
+            <span class="cc-label">G</span>
+            <input type="range" class="cc-range" id="ccg-g" min="0" max="255" value="58"/>
+            <input type="number" class="cc-num" id="ccg-g-val" min="0" max="255" value="58"/>
+          </div>
+          <div class="cc-row">
+            <span class="cc-label">B</span>
+            <input type="range" class="cc-range" id="ccg-b" min="0" max="255" value="127"/>
+            <input type="number" class="cc-num" id="ccg-b-val" min="0" max="255" value="127"/>
+          </div>
+        </div>
+        <button type="button" class="cc-reset" id="ccg-reset">איפוס</button>
+      </div>
+
+      <div class="cc-panel" data-panel="bg">
+        <label class="cc-preview" title="בחרו רקע">
+          <span class="cc-preview-hex" id="ccb-hex">#faf6f1</span>
+          <input type="color" id="ccb-color" value="#faf6f1"/>
+        </label>
+        <div class="cc-sliders" dir="ltr">
+          <div class="cc-row">
+            <span class="cc-label">R</span>
+            <input type="range" class="cc-range" id="ccb-r" min="0" max="255" value="250"/>
+            <input type="number" class="cc-num" id="ccb-r-val" min="0" max="255" value="250"/>
+          </div>
+          <div class="cc-row">
+            <span class="cc-label">G</span>
+            <input type="range" class="cc-range" id="ccb-g" min="0" max="255" value="246"/>
+            <input type="number" class="cc-num" id="ccb-g-val" min="0" max="255" value="246"/>
+          </div>
+          <div class="cc-row">
+            <span class="cc-label">B</span>
+            <input type="range" class="cc-range" id="ccb-b" min="0" max="255" value="241"/>
+            <input type="number" class="cc-num" id="ccb-b-val" min="0" max="255" value="241"/>
+          </div>
+        </div>
+        <button type="button" class="cc-reset" id="ccb-reset">איפוס</button>
+      </div>
     </div>
 
   </main>
@@ -1139,20 +1199,8 @@
       }
     })();
 
-    // ─── Live RGB color picker ───
+    // ─── Live RGB color picker (two tabs: gold + bg) ───
     (function() {
-      var DEFAULT_HEX = '#193a7f';
-      var cInput   = document.getElementById('cc-color');
-      var rInput   = document.getElementById('cc-r');
-      var gInput   = document.getElementById('cc-g');
-      var bInput   = document.getElementById('cc-b');
-      var rNum     = document.getElementById('cc-r-val');
-      var gNum     = document.getElementById('cc-g-val');
-      var bNum     = document.getElementById('cc-b-val');
-      var hexOut   = document.getElementById('cc-hex');
-      var resetBtn = document.getElementById('cc-reset');
-      if (!cInput || !rInput || !gInput || !bInput) return;
-
       function clamp(n) { n = parseInt(n, 10); if (isNaN(n)) n = 0; return Math.max(0, Math.min(255, n)); }
       function h2(n) { return n.toString(16).padStart(2, '0'); }
       function toHex(r, g, b) { return '#' + h2(r) + h2(g) + h2(b); }
@@ -1160,44 +1208,75 @@
         return [parseInt(hex.slice(1, 3), 16), parseInt(hex.slice(3, 5), 16), parseInt(hex.slice(5, 7), 16)];
       }
 
-      function apply(r, g, b) {
-        r = clamp(r); g = clamp(g); b = clamp(b);
-        var hex = toHex(r, g, b);
-        document.documentElement.style.setProperty('--gold', hex);
-        document.documentElement.style.setProperty('--gold-soft', hex);
-        cInput.value = hex;
-        if (document.activeElement !== rInput) rInput.value = r;
-        if (document.activeElement !== gInput) gInput.value = g;
-        if (document.activeElement !== bInput) bInput.value = b;
-        if (document.activeElement !== rNum) rNum.value = r;
-        if (document.activeElement !== gNum) gNum.value = g;
-        if (document.activeElement !== bNum) bNum.value = b;
-        hexOut.textContent = hex;
-        // Channel-tinted slider tracks (the other two channels held fixed)
-        rInput.style.setProperty('--track', 'linear-gradient(to right, rgb(0,' + g + ',' + b + '), rgb(255,' + g + ',' + b + '))');
-        gInput.style.setProperty('--track', 'linear-gradient(to right, rgb(' + r + ',0,' + b + '), rgb(' + r + ',255,' + b + '))');
-        bInput.style.setProperty('--track', 'linear-gradient(to right, rgb(' + r + ',' + g + ',0), rgb(' + r + ',' + g + ',255))');
+      function setupPicker(opts) {
+        var p = opts.prefix;
+        var c = document.getElementById(p + '-color');
+        var r = document.getElementById(p + '-r');
+        var g = document.getElementById(p + '-g');
+        var b = document.getElementById(p + '-b');
+        var rn = document.getElementById(p + '-r-val');
+        var gn = document.getElementById(p + '-g-val');
+        var bn = document.getElementById(p + '-b-val');
+        var hex = document.getElementById(p + '-hex');
+        var reset = document.getElementById(p + '-reset');
+        if (!c || !r || !g || !b) return;
+
+        function apply(rv, gv, bv) {
+          rv = clamp(rv); gv = clamp(gv); bv = clamp(bv);
+          var hx = toHex(rv, gv, bv);
+          opts.vars.forEach(function(name) {
+            document.documentElement.style.setProperty(name, hx);
+          });
+          c.value = hx;
+          if (document.activeElement !== r) r.value = rv;
+          if (document.activeElement !== g) g.value = gv;
+          if (document.activeElement !== b) b.value = bv;
+          if (document.activeElement !== rn) rn.value = rv;
+          if (document.activeElement !== gn) gn.value = gv;
+          if (document.activeElement !== bn) bn.value = bv;
+          hex.textContent = hx;
+          r.style.setProperty('--track', 'linear-gradient(to right, rgb(0,' + gv + ',' + bv + '), rgb(255,' + gv + ',' + bv + '))');
+          g.style.setProperty('--track', 'linear-gradient(to right, rgb(' + rv + ',0,' + bv + '), rgb(' + rv + ',255,' + bv + '))');
+          b.style.setProperty('--track', 'linear-gradient(to right, rgb(' + rv + ',' + gv + ',0), rgb(' + rv + ',' + gv + ',255))');
+        }
+
+        c.addEventListener('input', function() {
+          var rgb = fromHex(c.value);
+          apply(rgb[0], rgb[1], rgb[2]);
+        });
+        function fromSliders() { apply(r.value, g.value, b.value); }
+        function fromNums() { apply(rn.value, gn.value, bn.value); }
+        r.addEventListener('input', fromSliders);
+        g.addEventListener('input', fromSliders);
+        b.addEventListener('input', fromSliders);
+        rn.addEventListener('input', fromNums);
+        gn.addEventListener('input', fromNums);
+        bn.addEventListener('input', fromNums);
+        reset.addEventListener('click', function() {
+          var rgb = fromHex(opts.defaultHex);
+          apply(rgb[0], rgb[1], rgb[2]);
+        });
+
+        apply(r.value, g.value, b.value);
       }
 
-      cInput.addEventListener('input', function() {
-        var rgb = fromHex(cInput.value);
-        apply(rgb[0], rgb[1], rgb[2]);
-      });
-      function sliderUpdate() { apply(rInput.value, gInput.value, bInput.value); }
-      function numUpdate() { apply(rNum.value, gNum.value, bNum.value); }
-      rInput.addEventListener('input', sliderUpdate);
-      gInput.addEventListener('input', sliderUpdate);
-      bInput.addEventListener('input', sliderUpdate);
-      rNum.addEventListener('input', numUpdate);
-      gNum.addEventListener('input', numUpdate);
-      bNum.addEventListener('input', numUpdate);
-      resetBtn.addEventListener('click', function() {
-        var rgb = fromHex(DEFAULT_HEX);
-        apply(rgb[0], rgb[1], rgb[2]);
-      });
+      setupPicker({ prefix: 'ccg', defaultHex: '#193a7f', vars: ['--gold', '--gold-soft'] });
+      setupPicker({ prefix: 'ccb', defaultHex: '#faf6f1', vars: ['--bg'] });
 
-      // Initialize the gradient tracks
-      apply(rInput.value, gInput.value, bInput.value);
+      // Tab switcher
+      document.querySelectorAll('.cc-tab').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var target = btn.dataset.target;
+          document.querySelectorAll('.cc-tab').forEach(function(t) {
+            var on = t === btn;
+            t.classList.toggle('active', on);
+            t.setAttribute('aria-selected', on ? 'true' : 'false');
+          });
+          document.querySelectorAll('.cc-panel').forEach(function(p) {
+            p.classList.toggle('active', p.dataset.panel === target);
+          });
+        });
+      });
     })();
 
   </script>
