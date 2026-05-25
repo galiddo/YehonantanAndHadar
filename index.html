@@ -68,14 +68,6 @@
       border-radius: 6px;
     }
 
-    .venue-img {
-      width: 100%;
-      max-width: 280px;
-      height: auto;
-      display: block;
-      mix-blend-mode: multiply;
-    }
-
     .divider {
       width: 88px;
       height: 1px;
@@ -90,13 +82,6 @@
       flex-direction: column;
       align-items: center;
       gap: 6px;
-    }
-
-    .event-date {
-      font-family: 'Felix007', system-ui, sans-serif;
-      font-weight: 700;
-      font-size: clamp(1.6rem, 7vw, 2rem);
-      letter-spacing: 0.04em;
     }
 
     .event-location {
@@ -471,19 +456,10 @@
       .title-img {
         max-width: min(320px, 86vw);
       }
-      .venue-img {
-        max-width: min(260px, 80vw);
-        max-height: 32vh;
-        width: auto;
-      }
       .divider { display: none; }
       .event-info {
         gap: 6px;
         flex-shrink: 0;
-      }
-      .event-date {
-        font-size: clamp(1.8rem, 7.8vw, 2.3rem);
-        letter-spacing: 0.03em;
       }
       .event-location { font-size: 1.15rem; }
       .event-address {
@@ -516,8 +492,6 @@
     /* Smaller / shorter phones */
     @media (max-width: 480px) and (max-height: 720px) {
       .title-img { max-width: min(280px, 84vw); }
-      .venue-img { max-height: 26vh; }
-      .event-date { font-size: clamp(1.5rem, 6.8vw, 2rem); }
       .event-location { font-size: 1.05rem; }
       .event-address { font-size: 0.92rem; }
       .btn-tile { min-height: 90px; padding: 14px 8px; }
@@ -534,12 +508,10 @@
 
     <div class="header">
       <img class="title-img" src="assets/title.jpg" alt="הדר ויהונתן 04/09/2026"/>
-      <img class="venue-img" src="assets/venue.jpg" alt="מונא ירושלים"/>
       <div class="divider"></div>
     </div>
 
     <div class="event-info">
-      <div class="event-date">4.9.2026</div>
       <div class="event-location">מונא · 15:00</div>
       <div class="event-address">שמואל הנגיד 12, ירושלים</div>
     </div>
