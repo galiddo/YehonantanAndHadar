@@ -924,9 +924,11 @@
       function runEasterEgg() {
         animating = true;
         var rect = img.getBoundingClientRect();
-        var clone = img.cloneNode(true);
+        var egg = document.createElement('img');
+        egg.src = 'assets/easter.jpg';
+        egg.alt = '';
         var ease = 'cubic-bezier(0.22, 1, 0.36, 1)';
-        Object.assign(clone.style, {
+        Object.assign(egg.style, {
           position: 'fixed',
           left: rect.left + 'px',
           top: rect.top + 'px',
@@ -934,30 +936,35 @@
           height: rect.height + 'px',
           margin: '0',
           maxWidth: 'none',
-          objectFit: 'contain',
+          objectFit: 'cover',
           background: '#193a7f',
           borderRadius: '6px',
           zIndex: '9999',
-          transition: 'left ' + EASE_MS + 'ms ' + ease + ', top ' + EASE_MS + 'ms ' + ease + ', width ' + EASE_MS + 'ms ' + ease + ', height ' + EASE_MS + 'ms ' + ease + ', border-radius ' + EASE_MS + 'ms ease',
+          opacity: '0',
+          transition: 'left ' + EASE_MS + 'ms ' + ease + ', top ' + EASE_MS + 'ms ' + ease + ', width ' + EASE_MS + 'ms ' + ease + ', height ' + EASE_MS + 'ms ' + ease + ', border-radius ' + EASE_MS + 'ms ease, opacity 200ms ease',
         });
-        document.body.appendChild(clone);
-        clone.getBoundingClientRect(); // flush layout
+        document.body.appendChild(egg);
+        egg.getBoundingClientRect(); // flush layout
         requestAnimationFrame(function() {
-          clone.style.left = '0';
-          clone.style.top = '0';
-          clone.style.width = '100vw';
-          clone.style.height = '100vh';
-          clone.style.borderRadius = '0';
+          egg.style.opacity = '1';
+          egg.style.left = '0';
+          egg.style.top = '0';
+          egg.style.width = '100vw';
+          egg.style.height = '100vh';
+          egg.style.borderRadius = '0';
         });
         setTimeout(function() {
-          clone.style.left = rect.left + 'px';
-          clone.style.top = rect.top + 'px';
-          clone.style.width = rect.width + 'px';
-          clone.style.height = rect.height + 'px';
-          clone.style.borderRadius = '6px';
+          egg.style.left = rect.left + 'px';
+          egg.style.top = rect.top + 'px';
+          egg.style.width = rect.width + 'px';
+          egg.style.height = rect.height + 'px';
+          egg.style.borderRadius = '6px';
           setTimeout(function() {
-            clone.remove();
-            animating = false;
+            egg.style.opacity = '0';
+            setTimeout(function() {
+              egg.remove();
+              animating = false;
+            }, 200);
           }, EASE_MS);
         }, EASE_MS + HOLD_MS);
       }
