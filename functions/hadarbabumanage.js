@@ -85,8 +85,8 @@ function forbidden(env) {
 
 async function renderDashboard(env, key) {
   const [rsvpsRes, busRes] = await Promise.all([
-    env.DB.prepare('SELECT id, name, guests, created_at FROM rsvps ORDER BY created_at DESC').all(),
-    env.DB.prepare('SELECT id, name, phone, passengers, pickup, notes, created_at FROM bus_signups ORDER BY created_at DESC').all(),
+    env.DB.prepare('SELECT id, name, guests, created_at FROM rsvps ORDER BY name COLLATE NOCASE ASC').all(),
+    env.DB.prepare('SELECT id, name, phone, passengers, pickup, notes, created_at FROM bus_signups ORDER BY name COLLATE NOCASE ASC').all(),
   ]);
   const rs = rsvpsRes.results || [];
   const bs = busRes.results || [];
@@ -148,7 +148,38 @@ async function renderDashboard(env, key) {
     .panel-head h2 { margin: 0; font-size: 1.15rem; color: #193a7f; }
     .export-btn { display: inline-block; padding: 8px 14px; background: #193a7f; color: #fff; text-decoration: none; border-radius: 4px; font-size: 0.95rem; }
     .export-btn:hover { background: #11285a; }
-    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+    .table-wrap {
+      position: relative;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      max-width: 100%;
+      /* Always show a scrollbar so users see it can scroll */
+      scrollbar-width: thin;
+      scrollbar-color: #193a7f #eee9e0;
+    }
+    .table-wrap::-webkit-scrollbar { height: 10px; }
+    .table-wrap::-webkit-scrollbar-track { background: #eee9e0; border-radius: 5px; }
+    .table-wrap::-webkit-scrollbar-thumb { background: #193a7f; border-radius: 5px; }
+    /* Right-edge fade as a visible cue when there's more content to scroll */
+    .table-wrap::after {
+      content: "";
+      position: absolute;
+      top: 0; bottom: 10px; left: 0;
+      width: 40px;
+      pointer-events: none;
+      background: linear-gradient(to right, #fff, rgba(255,255,255,0));
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .table-wrap.has-scroll::after { opacity: 1; }
+    .scroll-hint {
+      display: none;
+      font-size: 0.8rem;
+      color: #193a7f;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+    .scroll-hint.show { display: block; }
     table { width: 100%; min-width: 480px; border-collapse: collapse; font-size: 0.95rem; }
     th, td { border: 1px solid #e0d8ca; padding: 8px 10px; text-align: right; vertical-align: top; }
     th { background: #eee9e0; color: #193a7f; font-weight: 700; }
@@ -202,6 +233,7 @@ async function renderDashboard(env, key) {
       <h2>אישורי הגעה</h2>
       <a class="export-btn" href="?key=${kq}&amp;export=rsvps">⬇ ייצוא ל-Excel (CSV)</a>
     </div>
+    <div class="scroll-hint">↔ גלול לצדדים לראיית עוד עמודות</div>
     <div class="table-wrap">
       <table>
         <thead><tr><th>שם</th><th>אורחים</th><th>תאריך הרשמה</th><th>פעולות</th></tr></thead>
@@ -215,6 +247,7 @@ async function renderDashboard(env, key) {
       <h2>הרשמות להסעה</h2>
       <a class="export-btn" href="?key=${kq}&amp;export=bus">⬇ ייצוא ל-Excel (CSV)</a>
     </div>
+    <div class="scroll-hint">↔ גלול לצדדים לראיית עוד עמודות</div>
     <div class="table-wrap">
       <table>
         <thead><tr><th>שם</th><th>טלפון</th><th>נוסעים</th><th>נקודת איסוף</th><th>הערות</th><th>תאריך הרשמה</th><th>פעולות</th></tr></thead>
@@ -353,6 +386,22 @@ async function renderDashboard(env, key) {
       const actions = tr.querySelector('td.actions');
       actions.innerHTML = '<button class="btn-edit">ערוך</button><button class="btn-del">מחק</button>';
     }
+
+    // Reveal scroll affordance only when the table actually overflows.
+    function updateScrollHints() {
+      document.querySelectorAll('.table-wrap').forEach(w => {
+        const overflowing = w.scrollWidth > w.clientWidth + 1;
+        w.classList.toggle('has-scroll', overflowing);
+        const hint = w.previousElementSibling;
+        if (hint && hint.classList.contains('scroll-hint')) {
+          hint.classList.toggle('show', overflowing);
+        }
+      });
+    }
+    updateScrollHints();
+    window.addEventListener('resize', updateScrollHints);
+    // Re-check after a tab becomes visible (panels are display:none until active)
+    document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => setTimeout(updateScrollHints, 0)));
   </script>
 </body>
 </html>`;
@@ -368,7 +417,7 @@ async function renderDashboard(env, key) {
 
 async function exportRsvps(env) {
   const res = await env.DB.prepare(
-    'SELECT name, guests, created_at FROM rsvps ORDER BY created_at DESC'
+    'SELECT name, guests, created_at FROM rsvps ORDER BY name COLLATE NOCASE ASC'
   ).all();
   const rows = res.results || [];
   const header = ['שם', 'אורחים', 'תאריך הרשמה'];
@@ -381,7 +430,7 @@ async function exportRsvps(env) {
 
 async function exportBus(env) {
   const res = await env.DB.prepare(
-    'SELECT name, phone, passengers, pickup, notes, created_at FROM bus_signups ORDER BY created_at DESC'
+    'SELECT name, phone, passengers, pickup, notes, created_at FROM bus_signups ORDER BY name COLLATE NOCASE ASC'
   ).all();
   const rows = res.results || [];
   const header = ['שם', 'טלפון', 'נוסעים', 'נקודת איסוף', 'הערות', 'תאריך הרשמה'];
