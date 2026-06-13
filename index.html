@@ -716,8 +716,8 @@
     </div>
 
     <div class="event-info">
-      <div class="event-location">מונא · 15:00</div>
-      <div class="event-address">שמואל הנגיד 12, ירושלים</div>
+      <div class="event-location" id="event-location">מונא · 15:00</div>
+      <div class="event-address" id="event-address">שמואל הנגיד 12, ירושלים</div>
     </div>
 
     <div class="actions">
@@ -1015,11 +1015,14 @@
 
   <script>
     function openSheet() {
+      var loc = document.getElementById('event-location').textContent;
+      var addr = document.getElementById('event-address').textContent;
+      var calDetails = loc + ', ' + addr;
       var gcal = 'https://calendar.google.com/calendar/render?action=TEMPLATE'
         + '&text=' + encodeURIComponent('החתונה של הדר ויהונתן')
         + '&dates=20260904T150000/20260904T220000'
-        + '&details=' + encodeURIComponent('מונא, שמואל הנגיד 12, ירושלים')
-        + '&location=' + encodeURIComponent('מונא, שמואל הנגיד 12, ירושלים');
+        + '&details=' + encodeURIComponent(calDetails)
+        + '&location=' + encodeURIComponent(calDetails);
       document.getElementById('gcal-link').href = gcal;
       document.getElementById('overlay').classList.add('open');
     }
@@ -1220,12 +1223,15 @@
     }
 
     function downloadICS() {
+      var loc = document.getElementById('event-location').textContent;
+      var addr = document.getElementById('event-address').textContent;
+      var calDetails = (loc + ', ' + addr).replace(/,/g, '\\,');
       var lines = [
         'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Wedding//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH',
         'BEGIN:VEVENT','UID:hadar-yehonatan@2026','DTSTART:20260904T150000','DTEND:20260904T220000',
         'SUMMARY:החתונה של הדר ויהונתן',
-        'DESCRIPTION:מונא\\, שמואל הנגיד 12\\, ירושלים',
-        'LOCATION:מונא\\, שמואל הנגיד 12\\, ירושלים',
+        'DESCRIPTION:' + calDetails,
+        'LOCATION:' + calDetails,
         'STATUS:CONFIRMED','TRANSP:OPAQUE',
         'BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY','DESCRIPTION:החתונה מחר!','END:VALARM',
         'END:VEVENT','END:VCALENDAR'
@@ -1354,6 +1360,8 @@
           document.documentElement.style.setProperty('--text', s.color_text);
           applyTextFilter(s.color_text);
         }
+        if (s.text_location) document.getElementById('event-location').textContent = s.text_location;
+        if (s.text_address) document.getElementById('event-address').textContent = s.text_address;
         var pickerEl = document.querySelector('.color-controls');
         if (pickerEl && s.color_picker_visible === '0') {
           pickerEl.style.display = 'none';

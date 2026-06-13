@@ -2,7 +2,7 @@
 // POST /settings — admin-keyed, saves key=value pairs
 //   body: key=X, action=set, setting_key=<key>, setting_value=<value>
 
-const ALLOWED_KEYS = ['color_gold', 'color_bg', 'color_picker_visible', 'color_text'];
+const ALLOWED_KEYS = ['color_gold', 'color_bg', 'color_picker_visible', 'color_text', 'text_location', 'text_address'];
 
 export async function onRequestGet(context) {
   const { env } = context;
@@ -37,6 +37,10 @@ export async function onRequestPost(context) {
 
   if (settingKey === 'color_picker_visible' && settingValue !== '0' && settingValue !== '1') {
     return json({ error: 'invalid value' }, 400);
+  }
+
+  if (settingKey.startsWith('text_') && settingValue.length > 200) {
+    return json({ error: 'text too long' }, 400);
   }
 
   await env.DB.prepare(

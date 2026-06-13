@@ -101,6 +101,8 @@ async function renderDashboard(env, key) {
   const savedBg = settings.color_bg || '#faf6f1';
   const savedText = settings.color_text || '#2a2a2a';
   const pickerVisible = settings.color_picker_visible !== '0';
+  const savedLocation = settings.text_location || 'מונא · 15:00';
+  const savedAddress = settings.text_address || 'שמואל הנגיד 12, ירושלים';
 
   const rsvpRows = rs.length === 0
     ? `<tr><td colspan="4" class="empty">אין אישורי הגעה עדיין</td></tr>`
@@ -370,6 +372,22 @@ async function renderDashboard(env, key) {
       <button class="save-btn" id="save-text">שמור צבע טקסט</button>
       <p class="save-status" id="save-text-status"></p>
     </div>
+
+    <div class="settings-section">
+      <div class="settings-label">טקסטים בדף הראשי</div>
+      <div style="margin-bottom:12px">
+        <label style="display:block;font-size:0.85rem;color:#555;margin-bottom:4px">מיקום ושעה (שורה ראשונה)</label>
+        <input type="text" id="text-location" value="${esc(savedLocation)}" maxlength="200"
+          style="width:100%;padding:8px 10px;border:1px solid #d8d2c5;border-radius:4px;font-size:0.95rem;box-sizing:border-box"/>
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="display:block;font-size:0.85rem;color:#555;margin-bottom:4px">כתובת (שורה שנייה)</label>
+        <input type="text" id="text-address" value="${esc(savedAddress)}" maxlength="200"
+          style="width:100%;padding:8px 10px;border:1px solid #d8d2c5;border-radius:4px;font-size:0.95rem;box-sizing:border-box"/>
+      </div>
+      <button class="save-btn" id="save-texts">שמור טקסטים</button>
+      <p class="save-status" id="save-texts-status"></p>
+    </div>
   </div>
 
   <script>
@@ -576,9 +594,8 @@ async function renderDashboard(env, key) {
       });
 
       async function saveSetting(settingKey, settingValue, statusId) {
-        const statusEl = document.getElementById(statusId);
-        statusEl.className = 'save-status';
-        statusEl.textContent = 'שומר...';
+        const statusEl = statusId ? document.getElementById(statusId) : null;
+        if (statusEl) { statusEl.className = 'save-status'; statusEl.textContent = 'שומר...'; }
         try {
           const fd = new FormData();
           fd.set('key', KEY);
@@ -587,12 +604,14 @@ async function renderDashboard(env, key) {
           const res = await fetch('/settings', { method: 'POST', body: fd });
           const data = await res.json().catch(() => ({}));
           if (!res.ok || !data.ok) throw new Error(data.error || 'HTTP ' + res.status);
-          statusEl.className = 'save-status ok';
-          statusEl.textContent = 'נשמר ✓';
-          setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'save-status'; }, 3000);
+          if (statusEl) {
+            statusEl.className = 'save-status ok';
+            statusEl.textContent = 'נשמר ✓';
+            setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'save-status'; }, 3000);
+          }
         } catch (err) {
-          statusEl.className = 'save-status err';
-          statusEl.textContent = 'שגיאה: ' + err.message;
+          if (statusEl) { statusEl.className = 'save-status err'; statusEl.textContent = 'שגיאה: ' + err.message; }
+          throw err;
         }
       }
 
@@ -604,6 +623,21 @@ async function renderDashboard(env, key) {
       });
       document.getElementById('save-text').addEventListener('click', () => {
         saveSetting('color_text', document.getElementById('admin-text-input').value, 'save-text-status');
+      });
+      document.getElementById('save-texts').addEventListener('click', async () => {
+        const statusEl = document.getElementById('save-texts-status');
+        try {
+          await Promise.all([
+            saveSetting('text_location', document.getElementById('text-location').value, null),
+            saveSetting('text_address', document.getElementById('text-address').value, null),
+          ]);
+          statusEl.className = 'save-status ok';
+          statusEl.textContent = 'נשמר ✓';
+          setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'save-status'; }, 3000);
+        } catch (err) {
+          statusEl.className = 'save-status err';
+          statusEl.textContent = 'שגיאה: ' + err.message;
+        }
       });
 
       const toggle = document.getElementById('picker-visible-toggle');
