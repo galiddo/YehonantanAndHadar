@@ -31,7 +31,7 @@ export async function onRequestPost(context) {
     return json({ error: 'bad key' }, 400);
   }
 
-  if (settingKey.startsWith('color_') && !/^#[0-9a-fA-F]{6}$/.test(settingValue)) {
+  if (settingKey.startsWith('color_') && settingKey !== 'color_picker_visible' && !/^#[0-9a-fA-F]{6}$/.test(settingValue)) {
     return json({ error: 'invalid color' }, 400);
   }
 
