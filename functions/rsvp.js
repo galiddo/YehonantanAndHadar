@@ -19,7 +19,7 @@ export async function onRequestPost(context) {
   const name = String(data.name || '').trim().slice(0, 100);
   const guests = parseInt(data.guests, 10) || 0;
 
-  if (!name || guests < 1 || guests > 10) {
+  if (!name || guests < 0 || guests > 10) {
     return json({ error: 'missing or invalid fields' }, 400);
   }
 

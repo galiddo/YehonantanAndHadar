@@ -421,6 +421,25 @@
       border: 1px solid #f5b7b1;
     }
 
+    .btn-decline {
+      width: 100%;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--muted);
+      border-radius: 4px;
+      padding: 14px 22px;
+      font-family: 'Amatic SC', system-ui, sans-serif;
+      font-weight: 400;
+      font-size: 1.4rem;
+      cursor: pointer;
+      transition: background 0.2s ease, color 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-decline:hover, .btn-decline:active {
+      background: var(--muted);
+      color: #fff;
+    }
+
     .form-input[readonly] {
       background: #f3f0eb;
       cursor: not-allowed;
@@ -697,6 +716,8 @@
         <span>אישור הגעה</span>
       </button>
 
+      <button class="btn-decline" onclick="openDecline()">לא אוכל להגיע</button>
+
     <div class="button-grid">
       <button class="btn-tile" onclick="openSheet()">
         <svg class="btn-tile-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
@@ -913,6 +934,27 @@
     </div>
   </div>
 
+  <div class="overlay" id="decline-overlay" onclick="maybeCloseDecline(event)">
+    <div class="sheet">
+      <div class="handle"></div>
+      <p class="sheet-title">אי הגעה</p>
+
+      <form id="decline-form" onsubmit="submitDeclineForm(event)">
+        <input type="text" name="_honey" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;"/>
+
+        <div class="form-group">
+          <label class="form-label" for="decline-name">שם מלא</label>
+          <input class="form-input" id="decline-name" name="name" type="text" autocomplete="name" required/>
+        </div>
+
+        <button class="form-submit" type="submit" id="decline-submit">אישור אי הגעה</button>
+        <p class="form-status" id="decline-status"></p>
+      </form>
+
+      <button class="sheet-cancel" onclick="closeDecline()" style="margin-top: 12px;">ביטול</button>
+    </div>
+  </div>
+
   <div class="overlay" id="parking-overlay" onclick="maybeCloseParking(event)">
     <div class="sheet">
       <div class="handle"></div>
@@ -1030,6 +1072,66 @@
       if (e.target === document.getElementById('rsvp-overlay')) closeRSVP();
     }
 
+    // ─── Decline sheet ───
+    function openDecline() {
+      var status = document.getElementById('decline-status');
+      status.className = 'form-status';
+      status.textContent = '';
+      var submit = document.getElementById('decline-submit');
+      submit.disabled = false;
+      submit.textContent = 'אישור אי הגעה';
+      document.getElementById('decline-overlay').classList.add('open');
+    }
+
+    function closeDecline() {
+      document.getElementById('decline-overlay').classList.remove('open');
+    }
+
+    function maybeCloseDecline(e) {
+      if (e.target === document.getElementById('decline-overlay')) closeDecline();
+    }
+
+    function submitDeclineForm(e) {
+      e.preventDefault();
+      var form = e.target;
+      var submit = document.getElementById('decline-submit');
+      var status = document.getElementById('decline-status');
+
+      submit.disabled = true;
+      submit.textContent = 'שולח...';
+      status.className = 'form-status';
+      status.textContent = '';
+
+      var data = new FormData(form);
+      data.set('guests', '0');
+      fetch(RSVP_ENDPOINT, {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      }).then(function(resp) {
+        return resp.json().then(function(body) { return { ok: resp.ok, body: body }; });
+      }).then(function(r) {
+        if (r.ok && r.body && r.body.ok) {
+          status.className = 'form-status success';
+          status.textContent = 'תודה שעדכנתם אותנו.';
+          form.reset();
+          // re-prefill if slug-locked
+          var prefilled = document.getElementById('rsvp-name');
+          if (prefilled && prefilled.readOnly) {
+            document.getElementById('decline-name').value = prefilled.value;
+          }
+          submit.textContent = 'נשלח ✓';
+        } else {
+          throw new Error((r.body && r.body.error) || 'שליחה נכשלה');
+        }
+      }).catch(function() {
+        status.className = 'form-status error';
+        status.textContent = 'משהו השתבש. אנא נסו שוב מאוחר יותר.';
+        submit.disabled = false;
+        submit.textContent = 'אישור אי הגעה';
+      });
+    }
+
     // ─── Parking sheet ───
     function openParking() {
       document.getElementById('parking-overlay').classList.add('open');
@@ -1121,7 +1223,7 @@
 
       if (!name) { block(); return; }
 
-      ['rsvp-name', 'bus-name'].forEach(function(id) {
+      ['rsvp-name', 'bus-name', 'decline-name'].forEach(function(id) {
         var el = document.getElementById(id);
         if (!el) return;
         el.value = name;

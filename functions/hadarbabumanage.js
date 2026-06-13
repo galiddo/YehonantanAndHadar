@@ -94,6 +94,7 @@ async function renderDashboard(env, key) {
   const settings = {};
   for (const row of (settingsRes.results || [])) settings[row.key] = row.value;
   const totalGuests = rs.reduce((s, r) => s + (r.guests || 0), 0);
+  const totalDeclined = rs.filter(r => r.guests === 0).length;
   const totalPassengers = bs.reduce((s, r) => s + (r.passengers || 0), 0);
   const kq = encodeURIComponent(key);
   const savedGold = settings.color_gold || '#193a7f';
@@ -103,9 +104,9 @@ async function renderDashboard(env, key) {
   const rsvpRows = rs.length === 0
     ? `<tr><td colspan="4" class="empty">אין אישורי הגעה עדיין</td></tr>`
     : rs.map(r => `
-      <tr data-table="rsvps" data-id="${r.id}">
+      <tr data-table="rsvps" data-id="${r.id}"${r.guests === 0 ? ' class="declined"' : ''}>
         <td class="cell" data-field="name">${esc(r.name)}</td>
-        <td class="cell num" data-field="guests">${r.guests}</td>
+        <td class="cell num" data-field="guests">${r.guests === 0 ? '<span class="declined-x">✗</span>' : r.guests}</td>
         <td class="ts">${esc(fmtDate(r.created_at))}</td>
         <td class="actions">
           <button class="btn-edit">ערוך</button>
@@ -202,6 +203,10 @@ async function renderDashboard(env, key) {
     td.actions .btn-del:hover { background: #b03a2e; color: #fff; }
     td.actions .btn-save { border-color: #2e7d32; color: #2e7d32; }
     td.actions .btn-save:hover { background: #2e7d32; color: #fff; }
+    tr.declined td { background: #fdf0f0 !important; }
+    tr.declined.editing td { background: #fff8e1 !important; }
+    .declined-x { color: #b03a2e; font-weight: 700; font-size: 1.05rem; }
+    .declined-val { color: #b03a2e; }
     td.cell input { width: 100%; padding: 6px 8px; border: 1px solid #193a7f; border-radius: 3px; font-family: inherit; font-size: 0.95rem; }
     .empty { text-align: center; color: #999; padding: 24px; }
     .error-banner { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: #b03a2e; color: #fff; padding: 10px 18px; border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); z-index: 100; display: none; }
@@ -254,8 +259,9 @@ async function renderDashboard(env, key) {
   <div id="err" class="error-banner"></div>
 
   <div class="stats">
-    <div class="stat"><div class="lbl">אישורי הגעה</div><div class="val">${rs.length}</div></div>
+    <div class="stat"><div class="lbl">אישורי הגעה</div><div class="val">${rs.length - totalDeclined}</div></div>
     <div class="stat"><div class="lbl">סה״כ אורחים</div><div class="val">${totalGuests}</div></div>
+    <div class="stat"><div class="lbl">לא מגיעים</div><div class="val declined-val">${totalDeclined}</div></div>
     <div class="stat"><div class="lbl">הרשמות להסעה</div><div class="val">${bs.length}</div></div>
     <div class="stat"><div class="lbl">סה״כ נוסעים</div><div class="val">${totalPassengers}</div></div>
   </div>
