@@ -22,3 +22,8 @@ CREATE TABLE IF NOT EXISTS rsvps (
 );
 
 CREATE INDEX IF NOT EXISTS idx_rsvps_created_at ON rsvps(created_at DESC);
+
+CREATE TABLE IF NOT EXISTS settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL
+);

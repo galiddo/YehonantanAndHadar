@@ -1199,6 +1199,23 @@
       }
     })();
 
+    // ─── Load persisted settings from admin ───
+    (function() {
+      fetch('/settings').then(function(r) { return r.ok ? r.json() : {}; }).then(function(s) {
+        if (s.color_gold && /^#[0-9a-fA-F]{6}$/.test(s.color_gold)) {
+          document.documentElement.style.setProperty('--gold', s.color_gold);
+          document.documentElement.style.setProperty('--gold-soft', s.color_gold);
+        }
+        if (s.color_bg && /^#[0-9a-fA-F]{6}$/.test(s.color_bg)) {
+          document.documentElement.style.setProperty('--bg', s.color_bg);
+        }
+        var pickerEl = document.querySelector('.color-controls');
+        if (pickerEl && s.color_picker_visible === '0') {
+          pickerEl.style.display = 'none';
+        }
+      }).catch(function() {});
+    })();
+
     // ─── Live RGB color picker (two tabs: gold + bg) ───
     (function() {
       function clamp(n) { n = parseInt(n, 10); if (isNaN(n)) n = 0; return Math.max(0, Math.min(255, n)); }

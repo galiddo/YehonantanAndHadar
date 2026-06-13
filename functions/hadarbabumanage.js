@@ -84,15 +84,21 @@ function forbidden(env) {
 }
 
 async function renderDashboard(env, key) {
-  const [rsvpsRes, busRes] = await Promise.all([
+  const [rsvpsRes, busRes, settingsRes] = await Promise.all([
     env.DB.prepare('SELECT id, name, guests, created_at FROM rsvps ORDER BY name COLLATE NOCASE ASC').all(),
     env.DB.prepare('SELECT id, name, phone, passengers, pickup, notes, created_at FROM bus_signups ORDER BY name COLLATE NOCASE ASC').all(),
+    env.DB.prepare('SELECT key, value FROM settings').all(),
   ]);
   const rs = rsvpsRes.results || [];
   const bs = busRes.results || [];
+  const settings = {};
+  for (const row of (settingsRes.results || [])) settings[row.key] = row.value;
   const totalGuests = rs.reduce((s, r) => s + (r.guests || 0), 0);
   const totalPassengers = bs.reduce((s, r) => s + (r.passengers || 0), 0);
   const kq = encodeURIComponent(key);
+  const savedGold = settings.color_gold || '#193a7f';
+  const savedBg = settings.color_bg || '#faf6f1';
+  const pickerVisible = settings.color_picker_visible !== '0';
 
   const rsvpRows = rs.length === 0
     ? `<tr><td colspan="4" class="empty">אין אישורי הגעה עדיין</td></tr>`
@@ -209,6 +215,37 @@ async function renderDashboard(env, key) {
       td.actions { white-space: normal; min-width: 92px; }
       td.actions button { padding: 4px 6px; font-size: 0.8rem; margin: 2px; display: inline-block; }
     }
+    /* Settings panel */
+    .settings-section { margin-bottom: 28px; padding: 16px; background: #fff; border: 1px solid #d8d2c5; border-radius: 6px; }
+    .settings-label { font-weight: 700; font-size: 0.95rem; color: #193a7f; margin-bottom: 12px; }
+    .toggle-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .toggle-switch { position: relative; display: inline-block; width: 48px; height: 26px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-track { position: absolute; inset: 0; background: #ccc; border-radius: 13px; cursor: pointer; transition: background 0.2s; }
+    .toggle-track::before { content: ''; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px; background: #fff; border-radius: 50%; transition: transform 0.2s; }
+    .toggle-switch input:checked + .toggle-track { background: #193a7f; }
+    .toggle-switch input:checked + .toggle-track::before { transform: translateX(22px); }
+    .toggle-desc { font-size: 0.9rem; color: #444; }
+    .color-row { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+    .color-preview-wrap { display: flex; align-items: center; gap: 10px; }
+    .color-preview { width: 48px; height: 48px; border-radius: 6px; border: 1px solid #ccc; flex-shrink: 0; }
+    .color-hex-display { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.95rem; color: #333; }
+    .color-native { width: 48px; height: 40px; padding: 2px; border: 1px solid #ccc; border-radius: 4px; cursor: pointer; background: #fff; }
+    .rgb-sliders { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .rgb-row { display: grid; grid-template-columns: 20px 1fr 56px; align-items: center; gap: 10px; }
+    .rgb-label { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-weight: 700; font-size: 0.85rem; text-align: center; }
+    .rgb-range { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer; }
+    .rgb-range::-webkit-slider-runnable-track { height: 10px; border-radius: 5px; background: var(--track, #ddd); border: 1px solid rgba(0,0,0,0.1); }
+    .rgb-range::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid #555; margin-top: -5px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); cursor: pointer; }
+    .rgb-range::-moz-range-track { height: 10px; border-radius: 5px; background: var(--track, #ddd); }
+    .rgb-range::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: #fff; border: 2px solid #555; }
+    .rgb-num { width: 100%; padding: 5px 4px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.85rem; text-align: center; border: 1px solid #d8d2c5; border-radius: 4px; background: #fff; -moz-appearance: textfield; }
+    .rgb-num::-webkit-outer-spin-button, .rgb-num::-webkit-inner-spin-button { -webkit-appearance: none; }
+    .save-btn { padding: 9px 20px; background: #193a7f; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.95rem; font-weight: 700; }
+    .save-btn:hover { background: #11285a; }
+    .save-status { margin: 8px 0 0; font-size: 0.88rem; min-height: 1.2em; }
+    .save-status.ok { color: #2e7d32; }
+    .save-status.err { color: #b03a2e; }
   </style>
 </head>
 <body data-key="${esc(key)}">
@@ -226,6 +263,7 @@ async function renderDashboard(env, key) {
   <div class="tabs">
     <button class="tab-btn active" data-target="rsvps">אישורי הגעה (${rs.length})</button>
     <button class="tab-btn" data-target="bus">הסעות (${bs.length})</button>
+    <button class="tab-btn" data-target="settings">הגדרות</button>
   </div>
 
   <div class="panel active" id="rsvps">
@@ -253,6 +291,59 @@ async function renderDashboard(env, key) {
         <thead><tr><th>שם</th><th>טלפון</th><th>נוסעים</th><th>נקודת איסוף</th><th>הערות</th><th>תאריך הרשמה</th><th>פעולות</th></tr></thead>
         <tbody>${busRows}</tbody>
       </table>
+    </div>
+  </div>
+
+  <div class="panel" id="settings">
+    <h2 style="margin:0 0 18px;color:#193a7f;font-size:1.1rem;">הגדרות אתר</h2>
+
+    <div class="settings-section">
+      <div class="settings-label">נראות בורר הצבעים בדף הראשי</div>
+      <div class="toggle-row">
+        <label class="toggle-switch">
+          <input type="checkbox" id="picker-visible-toggle" ${pickerVisible ? 'checked' : ''}/>
+          <span class="toggle-track"></span>
+        </label>
+        <span id="picker-visible-label" class="toggle-desc">${pickerVisible ? 'מוצג' : 'מוסתר'}</span>
+      </div>
+      <button class="save-btn" id="save-visibility">שמור נראות</button>
+      <p class="save-status" id="save-visibility-status"></p>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">צבע ראשי (כפתורים, מסגרות)</div>
+      <div class="color-row">
+        <div class="color-preview-wrap">
+          <div class="color-preview" id="admin-gold-preview" style="background:${esc(savedGold)}"></div>
+          <span class="color-hex-display" id="admin-gold-hex">${esc(savedGold)}</span>
+        </div>
+        <input type="color" class="color-native" id="admin-gold-input" value="${esc(savedGold)}"/>
+      </div>
+      <div class="rgb-sliders">
+        <div class="rgb-row"><span class="rgb-label">R</span><input type="range" class="rgb-range" id="adm-r" min="0" max="255"/><input type="number" class="rgb-num" id="adm-r-val" min="0" max="255"/></div>
+        <div class="rgb-row"><span class="rgb-label">G</span><input type="range" class="rgb-range" id="adm-g" min="0" max="255"/><input type="number" class="rgb-num" id="adm-g-val" min="0" max="255"/></div>
+        <div class="rgb-row"><span class="rgb-label">B</span><input type="range" class="rgb-range" id="adm-b" min="0" max="255"/><input type="number" class="rgb-num" id="adm-b-val" min="0" max="255"/></div>
+      </div>
+      <button class="save-btn" id="save-gold">שמור צבע ראשי</button>
+      <p class="save-status" id="save-gold-status"></p>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-label">צבע רקע</div>
+      <div class="color-row">
+        <div class="color-preview-wrap">
+          <div class="color-preview" id="admin-bg-preview" style="background:${esc(savedBg)}"></div>
+          <span class="color-hex-display" id="admin-bg-hex">${esc(savedBg)}</span>
+        </div>
+        <input type="color" class="color-native" id="admin-bg-input" value="${esc(savedBg)}"/>
+      </div>
+      <div class="rgb-sliders">
+        <div class="rgb-row"><span class="rgb-label">R</span><input type="range" class="rgb-range" id="adm-br" min="0" max="255"/><input type="number" class="rgb-num" id="adm-br-val" min="0" max="255"/></div>
+        <div class="rgb-row"><span class="rgb-label">G</span><input type="range" class="rgb-range" id="adm-bg" min="0" max="255"/><input type="number" class="rgb-num" id="adm-bg-val" min="0" max="255"/></div>
+        <div class="rgb-row"><span class="rgb-label">B</span><input type="range" class="rgb-range" id="adm-bb" min="0" max="255"/><input type="number" class="rgb-num" id="adm-bb-val" min="0" max="255"/></div>
+      </div>
+      <button class="save-btn" id="save-bg">שמור צבע רקע</button>
+      <p class="save-status" id="save-bg-status"></p>
     </div>
   </div>
 
@@ -402,6 +493,96 @@ async function renderDashboard(env, key) {
     window.addEventListener('resize', updateScrollHints);
     // Re-check after a tab becomes visible (panels are display:none until active)
     document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => setTimeout(updateScrollHints, 0)));
+
+    // ─── Settings panel ───
+    (function() {
+      function clamp(n) { n = parseInt(n, 10); return isNaN(n) ? 0 : Math.max(0, Math.min(255, n)); }
+      function h2(n) { return n.toString(16).padStart(2, '0'); }
+      function toHex(r, g, b) { return '#' + h2(r) + h2(g) + h2(b); }
+      function fromHex(hex) {
+        return [parseInt(hex.slice(1,3),16), parseInt(hex.slice(3,5),16), parseInt(hex.slice(5,7),16)];
+      }
+
+      function setupAdminPicker(opts) {
+        const native = document.getElementById(opts.nativeId);
+        const preview = document.getElementById(opts.previewId);
+        const hexDisp = document.getElementById(opts.hexId);
+        const rS = document.getElementById(opts.rId);  const rN = document.getElementById(opts.rValId);
+        const gS = document.getElementById(opts.gId);  const gN = document.getElementById(opts.gValId);
+        const bS = document.getElementById(opts.bId);  const bN = document.getElementById(opts.bValId);
+        if (!native) return;
+
+        function apply(rv, gv, bv) {
+          rv = clamp(rv); gv = clamp(gv); bv = clamp(bv);
+          const hx = toHex(rv, gv, bv);
+          native.value = hx;
+          preview.style.background = hx;
+          hexDisp.textContent = hx;
+          if (document.activeElement !== rS) rS.value = rv;
+          if (document.activeElement !== gS) gS.value = gv;
+          if (document.activeElement !== bS) bS.value = bv;
+          if (document.activeElement !== rN) rN.value = rv;
+          if (document.activeElement !== gN) gN.value = gv;
+          if (document.activeElement !== bN) bN.value = bv;
+          rS.style.setProperty('--track', \`linear-gradient(to right,rgb(0,\${gv},\${bv}),rgb(255,\${gv},\${bv}))\`);
+          gS.style.setProperty('--track', \`linear-gradient(to right,rgb(\${rv},0,\${bv}),rgb(\${rv},255,\${bv}))\`);
+          bS.style.setProperty('--track', \`linear-gradient(to right,rgb(\${rv},\${gv},0),rgb(\${rv},\${gv},255))\`);
+        }
+
+        native.addEventListener('input', () => { const [r,g,b] = fromHex(native.value); apply(r,g,b); });
+        [rS,gS,bS].forEach(s => s.addEventListener('input', () => apply(rS.value, gS.value, bS.value)));
+        [rN,gN,bN].forEach(n => n.addEventListener('input', () => apply(rN.value, gN.value, bN.value)));
+
+        const [r,g,b] = fromHex(native.value);
+        apply(r, g, b);
+      }
+
+      setupAdminPicker({
+        nativeId: 'admin-gold-input', previewId: 'admin-gold-preview', hexId: 'admin-gold-hex',
+        rId: 'adm-r', rValId: 'adm-r-val', gId: 'adm-g', gValId: 'adm-g-val', bId: 'adm-b', bValId: 'adm-b-val',
+      });
+      setupAdminPicker({
+        nativeId: 'admin-bg-input', previewId: 'admin-bg-preview', hexId: 'admin-bg-hex',
+        rId: 'adm-br', rValId: 'adm-br-val', gId: 'adm-bg', gValId: 'adm-bg-val', bId: 'adm-bb', bValId: 'adm-bb-val',
+      });
+
+      async function saveSetting(settingKey, settingValue, statusId) {
+        const statusEl = document.getElementById(statusId);
+        statusEl.className = 'save-status';
+        statusEl.textContent = 'שומר...';
+        try {
+          const fd = new FormData();
+          fd.set('key', KEY);
+          fd.set('setting_key', settingKey);
+          fd.set('setting_value', settingValue);
+          const res = await fetch('/settings', { method: 'POST', body: fd });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok || !data.ok) throw new Error(data.error || 'HTTP ' + res.status);
+          statusEl.className = 'save-status ok';
+          statusEl.textContent = 'נשמר ✓';
+          setTimeout(() => { statusEl.textContent = ''; statusEl.className = 'save-status'; }, 3000);
+        } catch (err) {
+          statusEl.className = 'save-status err';
+          statusEl.textContent = 'שגיאה: ' + err.message;
+        }
+      }
+
+      document.getElementById('save-gold').addEventListener('click', () => {
+        saveSetting('color_gold', document.getElementById('admin-gold-input').value, 'save-gold-status');
+      });
+      document.getElementById('save-bg').addEventListener('click', () => {
+        saveSetting('color_bg', document.getElementById('admin-bg-input').value, 'save-bg-status');
+      });
+
+      const toggle = document.getElementById('picker-visible-toggle');
+      const toggleLabel = document.getElementById('picker-visible-label');
+      toggle.addEventListener('change', () => {
+        toggleLabel.textContent = toggle.checked ? 'מוצג' : 'מוסתר';
+      });
+      document.getElementById('save-visibility').addEventListener('click', () => {
+        saveSetting('color_picker_visible', toggle.checked ? '1' : '0', 'save-visibility-status');
+      });
+    })();
   </script>
 </body>
 </html>`;
