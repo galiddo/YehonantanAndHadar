@@ -2,7 +2,7 @@
 // POST /settings — admin-keyed, saves key=value pairs
 //   body: key=X, action=set, setting_key=<key>, setting_value=<value>
 
-const ALLOWED_KEYS = ['color_gold', 'color_bg', 'color_picker_visible'];
+const ALLOWED_KEYS = ['color_gold', 'color_bg', 'color_picker_visible', 'color_text'];
 
 export async function onRequestGet(context) {
   const { env } = context;

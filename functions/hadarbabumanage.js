@@ -99,6 +99,7 @@ async function renderDashboard(env, key) {
   const kq = encodeURIComponent(key);
   const savedGold = settings.color_gold || '#193a7f';
   const savedBg = settings.color_bg || '#faf6f1';
+  const savedText = settings.color_text || '#2a2a2a';
   const pickerVisible = settings.color_picker_visible !== '0';
 
   const rsvpRows = rs.length === 0
@@ -351,6 +352,24 @@ async function renderDashboard(env, key) {
       <button class="save-btn" id="save-bg">שמור צבע רקע</button>
       <p class="save-status" id="save-bg-status"></p>
     </div>
+
+    <div class="settings-section">
+      <div class="settings-label">צבע טקסט (כולל כפתורים ותמונת הכותרת)</div>
+      <div class="color-row">
+        <div class="color-preview-wrap">
+          <div class="color-preview" id="admin-text-preview" style="background:${esc(savedText)}"></div>
+          <span class="color-hex-display" id="admin-text-hex">${esc(savedText)}</span>
+        </div>
+        <input type="color" class="color-native" id="admin-text-input" value="${esc(savedText)}"/>
+      </div>
+      <div class="rgb-sliders">
+        <div class="rgb-row"><span class="rgb-label">R</span><input type="range" class="rgb-range" id="adm-tr" min="0" max="255"/><input type="number" class="rgb-num" id="adm-tr-val" min="0" max="255"/></div>
+        <div class="rgb-row"><span class="rgb-label">G</span><input type="range" class="rgb-range" id="adm-tg" min="0" max="255"/><input type="number" class="rgb-num" id="adm-tg-val" min="0" max="255"/></div>
+        <div class="rgb-row"><span class="rgb-label">B</span><input type="range" class="rgb-range" id="adm-tb" min="0" max="255"/><input type="number" class="rgb-num" id="adm-tb-val" min="0" max="255"/></div>
+      </div>
+      <button class="save-btn" id="save-text">שמור צבע טקסט</button>
+      <p class="save-status" id="save-text-status"></p>
+    </div>
   </div>
 
   <script>
@@ -551,6 +570,10 @@ async function renderDashboard(env, key) {
         nativeId: 'admin-bg-input', previewId: 'admin-bg-preview', hexId: 'admin-bg-hex',
         rId: 'adm-br', rValId: 'adm-br-val', gId: 'adm-bg', gValId: 'adm-bg-val', bId: 'adm-bb', bValId: 'adm-bb-val',
       });
+      setupAdminPicker({
+        nativeId: 'admin-text-input', previewId: 'admin-text-preview', hexId: 'admin-text-hex',
+        rId: 'adm-tr', rValId: 'adm-tr-val', gId: 'adm-tg', gValId: 'adm-tg-val', bId: 'adm-tb', bValId: 'adm-tb-val',
+      });
 
       async function saveSetting(settingKey, settingValue, statusId) {
         const statusEl = document.getElementById(statusId);
@@ -578,6 +601,9 @@ async function renderDashboard(env, key) {
       });
       document.getElementById('save-bg').addEventListener('click', () => {
         saveSetting('color_bg', document.getElementById('admin-bg-input').value, 'save-bg-status');
+      });
+      document.getElementById('save-text').addEventListener('click', () => {
+        saveSetting('color_text', document.getElementById('admin-text-input').value, 'save-text-status');
       });
 
       const toggle = document.getElementById('picker-visible-toggle');
