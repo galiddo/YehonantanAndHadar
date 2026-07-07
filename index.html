@@ -25,9 +25,9 @@
 
     :root {
       --bg:        #faf6f1;
-      --gold:      #193a7f;
-      --gold-soft: #193a7f;
-      --text:      #2a2a2a;
+      --gold:      #faf6f1;
+      --gold-soft: #faf6f1;
+      --text:      #94223b;
       --muted:     #7a7066;
     }
 
@@ -703,7 +703,7 @@
 <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
   <defs>
     <filter id="title-text-color" color-interpolation-filters="sRGB">
-      <feFlood id="title-text-flood" flood-color="#2a2a2a" result="color"/>
+      <feFlood id="title-text-flood" flood-color="#94223b" result="color"/>
       <feComposite in="color" in2="SourceAlpha" operator="in"/>
     </filter>
   </defs>
@@ -781,24 +781,24 @@
 
       <div class="cc-panel active" data-panel="gold">
         <label class="cc-preview" title="בחרו צבע">
-          <span class="cc-preview-hex" id="ccg-hex">#193a7f</span>
-          <input type="color" id="ccg-color" value="#193a7f"/>
+          <span class="cc-preview-hex" id="ccg-hex">#faf6f1</span>
+          <input type="color" id="ccg-color" value="#faf6f1"/>
         </label>
         <div class="cc-sliders" dir="ltr">
           <div class="cc-row">
             <span class="cc-label">R</span>
-            <input type="range" class="cc-range" id="ccg-r" min="0" max="255" value="25"/>
-            <input type="number" class="cc-num" id="ccg-r-val" min="0" max="255" value="25"/>
+            <input type="range" class="cc-range" id="ccg-r" min="0" max="255" value="250"/>
+            <input type="number" class="cc-num" id="ccg-r-val" min="0" max="255" value="250"/>
           </div>
           <div class="cc-row">
             <span class="cc-label">G</span>
-            <input type="range" class="cc-range" id="ccg-g" min="0" max="255" value="58"/>
-            <input type="number" class="cc-num" id="ccg-g-val" min="0" max="255" value="58"/>
+            <input type="range" class="cc-range" id="ccg-g" min="0" max="255" value="246"/>
+            <input type="number" class="cc-num" id="ccg-g-val" min="0" max="255" value="246"/>
           </div>
           <div class="cc-row">
             <span class="cc-label">B</span>
-            <input type="range" class="cc-range" id="ccg-b" min="0" max="255" value="127"/>
-            <input type="number" class="cc-num" id="ccg-b-val" min="0" max="255" value="127"/>
+            <input type="range" class="cc-range" id="ccg-b" min="0" max="255" value="241"/>
+            <input type="number" class="cc-num" id="ccg-b-val" min="0" max="255" value="241"/>
           </div>
         </div>
         <button type="button" class="cc-reset" id="ccg-reset">איפוס</button>
@@ -830,25 +830,25 @@
       </div>
 
       <div class="cc-panel" data-panel="text">
-        <label class="cc-preview" title="בחרו צבע טקסט" style="background:#2a2a2a">
-          <span class="cc-preview-hex" id="cct-hex">#2a2a2a</span>
-          <input type="color" id="cct-color" value="#2a2a2a"/>
+        <label class="cc-preview" title="בחרו צבע טקסט" style="background:#94223b">
+          <span class="cc-preview-hex" id="cct-hex">#94223b</span>
+          <input type="color" id="cct-color" value="#94223b"/>
         </label>
         <div class="cc-sliders" dir="ltr">
           <div class="cc-row">
             <span class="cc-label">R</span>
-            <input type="range" class="cc-range" id="cct-r" min="0" max="255" value="42"/>
-            <input type="number" class="cc-num" id="cct-r-val" min="0" max="255" value="42"/>
+            <input type="range" class="cc-range" id="cct-r" min="0" max="255" value="148"/>
+            <input type="number" class="cc-num" id="cct-r-val" min="0" max="255" value="148"/>
           </div>
           <div class="cc-row">
             <span class="cc-label">G</span>
-            <input type="range" class="cc-range" id="cct-g" min="0" max="255" value="42"/>
-            <input type="number" class="cc-num" id="cct-g-val" min="0" max="255" value="42"/>
+            <input type="range" class="cc-range" id="cct-g" min="0" max="255" value="34"/>
+            <input type="number" class="cc-num" id="cct-g-val" min="0" max="255" value="34"/>
           </div>
           <div class="cc-row">
             <span class="cc-label">B</span>
-            <input type="range" class="cc-range" id="cct-b" min="0" max="255" value="42"/>
-            <input type="number" class="cc-num" id="cct-b-val" min="0" max="255" value="42"/>
+            <input type="range" class="cc-range" id="cct-b" min="0" max="255" value="59"/>
+            <input type="number" class="cc-num" id="cct-b-val" min="0" max="255" value="59"/>
           </div>
         </div>
         <button type="button" class="cc-reset" id="cct-reset">איפוס</button>
@@ -1440,9 +1440,9 @@
         apply(r.value, g.value, b.value);
       }
 
-      setupPicker({ prefix: 'ccg', defaultHex: '#193a7f', vars: ['--gold', '--gold-soft'] });
+      setupPicker({ prefix: 'ccg', defaultHex: '#faf6f1', vars: ['--gold', '--gold-soft'] });
       setupPicker({ prefix: 'ccb', defaultHex: '#faf6f1', vars: ['--bg'] });
-      setupPicker({ prefix: 'cct', defaultHex: '#2a2a2a', vars: ['--text'], onApply: applyTextFilter });
+      setupPicker({ prefix: 'cct', defaultHex: '#94223b', vars: ['--text'], onApply: applyTextFilter });
 
       // Tab switcher
       document.querySelectorAll('.cc-tab').forEach(function(btn) {
